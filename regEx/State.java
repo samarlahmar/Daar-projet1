@@ -1,8 +1,9 @@
 package regEx;
 
 import java.util.ArrayList;
+import java.util.Map;
 
-public class State implements Comparable<State> {
+public class State {
 
   private ArrayList<Transition> transitionsList;
   private boolean isAccepting;
@@ -17,6 +18,15 @@ public class State implements Comparable<State> {
     this.stateID = stateCounter++;
   }
 
+  public State(Map<Integer, State> ensemble) {
+    ArrayList<Transition> mergeTransition = new ArrayList<>();
+    for (State s : ensemble.values()) {
+      if (getAccepting() == false)
+        setAccepting(s.getAccepting());
+      mergeTransition.addAll(s.getTransitionsList());
+    }
+  }
+
   public int getStateID() { return stateID; }
 
   public boolean getAccepting() { return isAccepting; }
@@ -26,6 +36,11 @@ public class State implements Comparable<State> {
   }
 
   public ArrayList<Transition> getTransitionsList() { return transitionsList; }
+  public void deleteTransitionWithKey(int toDel) {
+    for (int i = 0; i < this.transitionsList.size(); i++)
+      if (transitionsList.get(i).getAccepted_Code() == toDel)
+        transitionsList.remove(i--);
+  }
 
   public void addTransition(Transition transition) {
     this.transitionsList.add(transition);
@@ -43,10 +58,5 @@ public class State implements Comparable<State> {
     for (Transition t : getTransitionsList())
       result += t.toDotString(getStateID());
     return result;
-  }
-
-  @Override
-  public int compareTo(State o) {
-    return Integer.compare(getStateID(), o.getStateID());
   }
 }

@@ -2,60 +2,61 @@ package regEx;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Automate {
 
-  private State starting_state;
-  private ArrayList<State> states;
-  private State final_state;
+  private Integer _starting_state, _final_state;
+  private Map<Integer, State> _states;
 
   public Automate(State starting_state, State final_state) {
-    this.starting_state = starting_state;
-    this.final_state = final_state;
-    this.states = new ArrayList<State>();
+    this._states = new HashMap<Integer, State>();
+    this._starting_state = starting_state.getStateID();
+    this._final_state = final_state.getStateID();
+    putState(final_state);
+    putState(starting_state);
   }
 
-  public ArrayList<State> getStates() { return this.states; }
+  public Map<Integer, State> getStates() { return this._states; }
 
-  public void setStates(ArrayList<State> states) { this.states = states; }
-
-  public void setStartingState(State starting_state) {
-    this.starting_state = starting_state;
+  public void putState(State newState) {
+    this._states.put(newState.getStateID(), newState);
   }
 
-  public State getStartingState() { return this.starting_state; }
-
-  public void setFinalState(State final_state) {
-    this.final_state = final_state;
+  public void putAllStates(Map<Integer, State> s) {
+    for (State state : s.values())
+      putState(state);
   }
 
-  public State getFinalState() { return this.final_state; }
+  public State getState(Integer id) { return this._states.get(id); }
 
-  public void addState(State s) { this.states.add(s); }
-
-  public void addAllStates(ArrayList<State> states) {
-    for (State s : states) {
-      this.states.add(s);
-    }
+  public void setStartingState(State newstarting_state) {
+    this._starting_state = newstarting_state.getStateID();
+    putState(newstarting_state);
   }
 
-  public int getNumberOfStates() { return states.size() + 2; }
+  public void setFinalState(State newfinal_state) {
+    this._final_state = newfinal_state.getStateID();
+    putState(newfinal_state);
+  }
+
+  public Integer getStartingStateID() { return this._starting_state; }
+  public State getStartingState() { return getState(getStartingStateID()); }
+  public Integer getFinalStateID() { return this._final_state; }
+  public State getFinalState() { return getState(getFinalStateID()); }
+  public int getNumberOfStates() { return this._states.size(); }
 
   public String toDotString() {
     String s = "digraph finite_state_machine {\n"
                + "graph [ dpi = 400 ];\n"
                + "rankdir=LR;\n"
                + "size=\"8,5\"\n"
-               + "node [shape = doublecircle]; " + final_state.getStateID() +
-               ";\n"
+               + "node [shape = doublecircle]; " + getFinalStateID() + ";\n"
                + "node [shape = circle];\n";
 
-    s += starting_state.toDotString(true);
-    for (State state : states)
-      s += state.toDotString(false);
-    s += final_state.toDotString(false);
+    for (State state : getStates().values())
+      s += state.toDotString(state.getStateID() == getStartingStateID());
     s += "}";
     return s;
   }

@@ -42,10 +42,10 @@ public class TreeToNdfa {
     aFinalState.setAccepting(false);
     aFinalState.addTransition(new Transition(bStartingState));
 
-    a.addState(aFinalState);
+    a.putState(aFinalState);
     a.setFinalState(b.getFinalState());
-    a.addState(bStartingState);
-    a.addAllStates(b.getStates());
+    a.putAllStates(b.getStates());
+    a.putState(bStartingState);
     return a;
   }
 
@@ -62,8 +62,8 @@ public class TreeToNdfa {
     aFinalState.addTransition(new Transition(s2));
     aFinalState.setAccepting(false);
 
-    a.addState(aStartingState);
-    a.addState(aFinalState);
+    a.putState(aStartingState);
+    a.putState(aFinalState);
 
     a.setStartingState(s1);
     a.setFinalState(s2);
@@ -87,12 +87,12 @@ public class TreeToNdfa {
     bFinalState.addTransition(new Transition(s2));
     bFinalState.setAccepting(false);
 
-    a.addState(aStartingState);
-    a.addState(aFinalState);
-    a.addState(bStartingState);
-    a.addState(bFinalState);
+    a.putState(aStartingState);
+    a.putState(aFinalState);
+    a.putState(bStartingState);
+    a.putState(bFinalState);
 
-    a.addAllStates(b.getStates());
+    a.putAllStates(b.getStates());
 
     a.setStartingState(s1);
     a.setFinalState(s2);
