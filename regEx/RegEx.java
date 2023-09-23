@@ -1,12 +1,8 @@
 package regEx;
 
-import java.util.Scanner;
-import regEx.TreeToNdfa;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import java.lang.Exception;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class RegEx {
   // MACROS
@@ -27,8 +23,7 @@ public class RegEx {
   private static String regEx;
 
   // CONSTRUCTOR
-  public RegEx() {
-  }
+  public RegEx() {}
 
   // MAIN
   public static void main(String arg[]) {
@@ -39,6 +34,7 @@ public class RegEx {
       Scanner scanner = new Scanner(System.in);
       System.out.print("  >> Please enter a regEx: ");
       regEx = scanner.next();
+      scanner.close();
     }
     System.out.println("  >> Parsing regEx \"" + regEx + "\".");
     System.out.println("  >> ...");
@@ -46,41 +42,19 @@ public class RegEx {
     if (regEx.length() < 1) {
       System.err.println("  >> ERROR: empty regEx.");
     } else {
-      System.out.print("  >> ASCII codes: [" + (int) regEx.charAt(0));
+      System.out.print("  >> ASCII codes: [" + (int)regEx.charAt(0));
       for (int i = 1; i < regEx.length(); i++)
-        System.out.print("," + (int) regEx.charAt(i));
+        System.out.print("," + (int)regEx.charAt(i));
       System.out.println("].");
       try {
         RegExTree ret = parse();
         System.out.println("  >> Tree result: " + ret.toString() + ".");
         Automate result = TreeToNdfa.makeNDFA(ret);
-        System.out.println(result.toDotString());
-        /*
-         * for (Integer r : result) {
-         * System.out.println(r) ;
-         * }
-         * Map<Integer,Automate> automateDeBase = new HashMap<Integer, Automate>() ;
-         * for (Integer i=0 ; i<result.size();i++) {
-         * Integer r = result.get(i) ;
-         * if ((r>=0) && (r<=255) ){
-         * Automate auto = TreeToNdfa.CreateBasisCaseAutomate(r) ;
-         * automateDeBase.put(i, auto) ;
-         * System.out.println(auto.toString()) ;
-         * }
-         * }
-         * 
-         * for (Integer i=0 ; i<result.size();i++) {
-         * Integer r = result.get(i) ;
-         * if (r == ETOILE){
-         * System.out.println(automateDeBase.get(i-1)) ;
-         * Automate auto = TreeToNdfa.CreateStarAutomate(automateDeBase.get(i-1)) ;
-         * System.out.println(auto.toString()) ;
-         * 
-         * }
-         */
-
+        result.writeToDotFile("automaton");
       } catch (Exception e) {
-        System.err.println("  >> ERROR: syntax error for regEx \"" + regEx + "\".");
+        System.err.println(e);
+        System.err.println("  >> ERROR: syntax error for regEx \"" + regEx +
+                           "\".");
       }
     }
 
@@ -91,18 +65,10 @@ public class RegEx {
 
   // FROM REGEX TO SYNTAX TREE
   private static RegExTree parse() throws Exception {
-    // BEGIN DEBUG: set conditionnal to true for debug example
-    if (false)
-      throw new Exception();
-    RegExTree example = exampleAhoUllman();
-    if (false)
-      return example;
-    // END DEBUG
-
     ArrayList<RegExTree> result = new ArrayList<RegExTree>();
     for (int i = 0; i < regEx.length(); i++)
-      result.add(new RegExTree(charToRoot(regEx.charAt(i)), new ArrayList<RegExTree>()));
-
+      result.add(new RegExTree(charToRoot(regEx.charAt(i)),
+                               new ArrayList<RegExTree>()));
     return parse(result);
   }
 
@@ -119,7 +85,7 @@ public class RegEx {
       return PARENTHESEFERMANT;
     if (c == '+')
       return PLUS;
-    return (int) c;
+    return (int)c;
   }
 
   private static RegExTree parse(ArrayList<RegExTree> result) throws Exception {
@@ -144,10 +110,10 @@ public class RegEx {
       if (t.root == PLUS && t.subTrees.isEmpty())
         return true;
     return false;
-
   }
 
-  private static ArrayList<RegExTree> processPlus(ArrayList<RegExTree> trees) throws Exception {
+  private static ArrayList<RegExTree> processPlus(ArrayList<RegExTree> trees)
+      throws Exception {
     ArrayList<RegExTree> result = new ArrayList<RegExTree>();
     boolean found = false;
     for (RegExTree t : trees) {
@@ -173,7 +139,8 @@ public class RegEx {
     return false;
   }
 
-  private static ArrayList<RegExTree> processParenthese(ArrayList<RegExTree> trees) throws Exception {
+  private static ArrayList<RegExTree>
+  processParenthese(ArrayList<RegExTree> trees) throws Exception {
     ArrayList<RegExTree> result = new ArrayList<RegExTree>();
     boolean found = false;
     for (RegExTree t : trees) {
@@ -208,7 +175,8 @@ public class RegEx {
     return false;
   }
 
-  private static ArrayList<RegExTree> processEtoile(ArrayList<RegExTree> trees) throws Exception {
+  private static ArrayList<RegExTree> processEtoile(ArrayList<RegExTree> trees)
+      throws Exception {
     ArrayList<RegExTree> result = new ArrayList<RegExTree>();
     boolean found = false;
     for (RegExTree t : trees) {
@@ -243,7 +211,8 @@ public class RegEx {
     return false;
   }
 
-  private static ArrayList<RegExTree> processConcat(ArrayList<RegExTree> trees) throws Exception {
+  private static ArrayList<RegExTree> processConcat(ArrayList<RegExTree> trees)
+      throws Exception {
     ArrayList<RegExTree> result = new ArrayList<RegExTree>();
     boolean found = false;
     boolean firstFound = false;
@@ -279,7 +248,8 @@ public class RegEx {
     return false;
   }
 
-  private static ArrayList<RegExTree> processAltern(ArrayList<RegExTree> trees) throws Exception {
+  private static ArrayList<RegExTree> processAltern(ArrayList<RegExTree> trees)
+      throws Exception {
     ArrayList<RegExTree> result = new ArrayList<RegExTree>();
     boolean found = false;
     RegExTree gauche = null;
@@ -319,25 +289,6 @@ public class RegEx {
     for (RegExTree t : tree.subTrees)
       subTrees.add(removeProtection(t));
     return new RegExTree(tree.root, subTrees);
-  }
-
-  // EXAMPLE
-  // --> RegEx from Aho-Ullman book Chap.10 Example 10.25
-  private static RegExTree exampleAhoUllman() {
-    RegExTree a = new RegExTree((int) 'a', new ArrayList<RegExTree>());
-    RegExTree b = new RegExTree((int) 'b', new ArrayList<RegExTree>());
-    RegExTree c = new RegExTree((int) 'c', new ArrayList<RegExTree>());
-    ArrayList<RegExTree> subTrees = new ArrayList<RegExTree>();
-    subTrees.add(c);
-    RegExTree cEtoile = new RegExTree(ETOILE, subTrees);
-    subTrees = new ArrayList<RegExTree>();
-    subTrees.add(b);
-    subTrees.add(cEtoile);
-    RegExTree dotBCEtoile = new RegExTree(CONCAT, subTrees);
-    subTrees = new ArrayList<RegExTree>();
-    subTrees.add(a);
-    subTrees.add(dotBCEtoile);
-    return new RegExTree(ALTERN, subTrees);
   }
 }
 
