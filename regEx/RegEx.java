@@ -51,6 +51,8 @@ public class RegEx {
         System.out.println("  >> Tree result: " + ret.toString() + ".");
         Automate result = TreeToNdfa.makeNDFA(ret);
         result.writeToDotFile("automaton");
+        Automate dfa = NdfaToDfa.convert(result);
+        dfa.writeToDotFile("dfa");
       } catch (Exception e) {
         System.err.println(e);
         System.err.println("  >> ERROR: syntax error for regEx \"" + regEx +

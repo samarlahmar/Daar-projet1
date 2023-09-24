@@ -2,6 +2,7 @@ package regEx;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +17,13 @@ public class Automate {
     this._final_state = final_state.getStateID();
     putState(final_state);
     putState(starting_state);
+  }
+
+  public Automate(Integer starting_state, Collection<State> tates) {
+    this._states = new HashMap<Integer, State>();
+    this._starting_state = starting_state;
+    for (State state : tates)
+      putState(state);
   }
 
   public Map<Integer, State> getStates() { return this._states; }
@@ -52,7 +60,6 @@ public class Automate {
                + "graph [ dpi = 400 ];\n"
                + "rankdir=LR;\n"
                + "size=\"8,5\"\n"
-               + "node [shape = doublecircle]; " + getFinalStateID() + ";\n"
                + "node [shape = circle];\n";
 
     for (State state : getStates().values())
