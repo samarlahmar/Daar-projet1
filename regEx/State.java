@@ -71,8 +71,13 @@ public class State {
       color = "blue";
 
     String label = String.format("%d", stateID);
-    if (merged != null)
-      label = merged.toString();
+    if (merged != null) {
+      if (merged.size() > 1)
+        label = merged.toString();
+      else
+        label = merged.iterator().next().toString();
+    }
+
     String result =
         String.format("%d [label=\"%s\" color=\"%s\"]", stateID, label, color);
 
