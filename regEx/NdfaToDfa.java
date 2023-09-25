@@ -2,10 +2,10 @@ package regEx;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class NdfaToDfa {
 
@@ -48,11 +48,10 @@ public class NdfaToDfa {
         base.addTransition(new Transition(newState.getKey(),
                                           old_to_new.get(newState.getValue())));
       else {
-        LinkedList<State> toMerge = new LinkedList<State>();
-        for (Integer i : newState.getValue())
-          toMerge.add(ndfa.getState(i));
-
-        State created = new State(toMerge);
+        State created = new State(newState.getValue()
+                                      .parallelStream()
+                                      .map(i -> ndfa.getState(i))
+                                      .collect(Collectors.toList()));
         processState(newState.getValue(), created);
         base.addTransition(new Transition(newState.getKey(), created));
       }
