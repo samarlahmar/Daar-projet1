@@ -30,6 +30,15 @@ public class NdfaToDfa {
 
     HashMap<Integer, Set<Integer>> letterToStates =
         new HashMap<Integer, Set<Integer>>();
+    Set<Integer> reachable = allEpsilonReachable(base);
+    for (Integer i : reachable) {
+      State s = ndfa.getState(i);
+      base.setAccepting(base.getAccepting() || s.getAccepting());
+      for (Transition t : s.getTransitionsList()) {
+        base.addTransition(t);
+      }
+    }
+    base.deleteTransitionWithKey(RegEx.Epsilon);
 
     for (Transition t : base.getTransitionsList()) {
       Set<Integer> tmp = letterToStates.get(t.getAccepted_Code());
@@ -49,7 +58,7 @@ public class NdfaToDfa {
                                           old_to_new.get(newState.getValue())));
       else {
         State created = new State(newState.getValue()
-                                      .parallelStream()
+                                      .stream()
                                       .map(i -> ndfa.getState(i))
                                       .collect(Collectors.toList()));
         processState(newState.getValue(), created);
@@ -57,5 +66,17 @@ public class NdfaToDfa {
       }
     }
     old_to_new.put(merged, base);
+  }
+
+  private static Set<Integer> allEpsilonReachable(State b) {
+    Set<Integer> reachable = new HashSet<Integer>();
+    for (Transition t : b.getTransitionsList()) {
+      if (t.getAccepted_Code() == RegEx.Epsilon) {
+        reachable.add(t.getDestination_id());
+        reachable.addAll(
+            allEpsilonReachable(ndfa.getState(t.getDestination_id())));
+      }
+    }
+    return reachable;
   }
 }

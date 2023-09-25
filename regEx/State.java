@@ -54,9 +54,7 @@ public class State {
     ;
   }
   public void deleteTransitionWithKey(int toDel) {
-    for (int i = 0; i < this.transitionsList.size(); i++)
-      if (transitionsList.get(i).getAccepted_Code() == toDel)
-        transitionsList.remove(i--);
+    transitionsList.removeIf(t -> t.getAccepted_Code() == toDel);
   }
 
   public void addTransition(Transition transition) {
