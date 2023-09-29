@@ -39,6 +39,8 @@ public class Automate {
 
   public State getState(Integer id) { return this._states.get(id); }
 
+  public void deleteState(Integer id) { this._states.remove(id); }
+
   public void setStartingState(State newstarting_state) {
     this._starting_state = newstarting_state.getStateID();
     putState(newstarting_state);

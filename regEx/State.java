@@ -2,7 +2,6 @@ package regEx;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
 
 public class State {
 
@@ -12,8 +11,6 @@ public class State {
 
   public static int stateCounter = 0;
   public static void resetCounter() { stateCounter = 0; }
-
-  private Set<Integer> merged = null;
 
   public State(boolean isAccepting) {
     this.transitionsList = new ArrayList<Transition>();
@@ -35,9 +32,6 @@ public class State {
         setAccepting(s.getAccepting());
       this.transitionsList.addAll(s.getTransitionsList());
     }
-    merged = new java.util.HashSet<Integer>();
-    for (State s : ensemble)
-      merged.add(s.getStateID());
   }
 
   public int getStateID() { return stateID; }
@@ -61,6 +55,10 @@ public class State {
     this.transitionsList.add(transition);
   }
 
+  public void addAllTransitions(Collection<Transition> transitions) {
+    this.transitionsList.addAll(transitions);
+  }
+
   public String toDotString(boolean isStarting) {
     String color = "black";
     if (isAccepting)
@@ -68,16 +66,8 @@ public class State {
     else if (isStarting)
       color = "blue";
 
-    String label = String.format("%d", stateID);
-    if (merged != null) {
-      if (merged.size() > 1)
-        label = merged.toString();
-      else
-        label = merged.iterator().next().toString();
-    }
-
-    String result =
-        String.format("%d [label=\"%s\" color=\"%s\"]", stateID, label, color);
+    String result = String.format("%d [label=\"%s\" color=\"%s\"]", stateID,
+                                  stateID, color);
 
     if (isAccepting)
       result += ";\n" + stateID + " [shape = doublecircle];\n";
@@ -85,5 +75,13 @@ public class State {
     for (Transition t : getTransitionsList())
       result += t.toDotString(getStateID());
     return result;
+  }
+
+  public static boolean isEquiv(State a, State b) {
+    if (a.getAccepting() != b.getAccepting() ||
+        a.getTransitionsList().size() != b.getTransitionsList().size())
+      return false;
+
+    return a.transitionsList.containsAll(b.transitionsList);
   }
 }

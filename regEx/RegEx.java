@@ -50,9 +50,7 @@ public class RegEx {
         RegExTree ret = parse();
         System.out.println("  >> Tree result: " + ret.toString() + ".");
         Automate result = TreeToNdfa.makeNDFA(ret);
-        result.writeToDotFile("automaton");
-        Automate dfa = NdfaToDfa.convert(result);
-        dfa.writeToDotFile("dfa");
+        NdfaToDfa.convert(result);
       } catch (Exception e) {
         System.err.println(e);
         System.err.println("  >> ERROR: syntax error for regEx \"" + regEx +

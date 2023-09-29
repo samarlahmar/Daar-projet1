@@ -1,5 +1,6 @@
 package regEx;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -14,20 +15,25 @@ public class NdfaToDfa {
 
   private static Automate ndfa = null;
 
-  public static Automate convert(Automate ndfa) {
+  public static Automate convert(Automate ndfa)
+      throws IOException, InterruptedException {
     old_to_new.clear();
     NdfaToDfa.ndfa = ndfa;
+    ndfa.writeToDotFile("ndfa");
 
     State starting_state = ndfa.getStartingState();
     Set<Integer> starting_set = new HashSet<Integer>();
     starting_set.add(starting_state.getStateID());
     processState(starting_set, starting_state);
 
-    return new Automate(starting_state.getStateID(), old_to_new.values());
+    Automate o = new Automate(starting_state.getStateID(), old_to_new.values());
+    o.writeToDotFile("dfa");
+    o = minimize(o);
+    o.writeToDotFile("minimized");
+    return o;
   }
 
   private static void processState(Set<Integer> merged, State base) {
-
     HashMap<Integer, Set<Integer>> letterToStates =
         new HashMap<Integer, Set<Integer>>();
     Set<Integer> reachable = allEpsilonReachable(base);
@@ -78,5 +84,32 @@ public class NdfaToDfa {
       }
     }
     return reachable;
+  }
+
+  private static Automate minimize(Automate dfa) {
+    Map<Integer, Integer> minmized = new HashMap<Integer, Integer>();
+    for (State toProcess : dfa.getStates().values()) {
+      Integer found = toProcess.getStateID();
+      for (Integer i : minmized.values())
+        if (State.isEquiv(toProcess, dfa.getState(i))) {
+          found = i;
+          break;
+        }
+      minmized.put(toProcess.getStateID(), found);
+    }
+
+    System.out.println("Minimized: " + minmized);
+
+    for (Entry<Integer, Integer> e : minmized.entrySet()) {
+      if (e.getKey() != e.getValue()) {
+        dfa.deleteState(e.getKey());
+        continue;
+      }
+      State editedState = dfa.getState(e.getKey());
+      for (Transition t : editedState.getTransitionsList())
+        t.setDestination_id(minmized.get(t.getDestination_id()));
+      dfa.putState(editedState);
+    }
+    return dfa;
   }
 }

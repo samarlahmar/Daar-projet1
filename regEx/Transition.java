@@ -42,4 +42,14 @@ public class Transition {
     return source_id + " -> " + this._destination_id + " [label=\"" +
         this.getAccepted_Char() + "\"];\n";
   }
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null)
+      return false;
+    if (!(obj instanceof Transition))
+      return false;
+    Transition other = (Transition)obj;
+    return this._accepted_Code == other._accepted_Code &&
+        this._destination_id == other._destination_id;
+  }
 }

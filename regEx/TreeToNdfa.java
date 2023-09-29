@@ -20,9 +20,7 @@ public class TreeToNdfa {
       return CreateOrAutomate(makeNDFA(tree.subTrees.get(0)),
                               makeNDFA(tree.subTrees.get(1)));
     case RegEx.PLUS:
-      return CreateConcatAutomate(
-          makeNDFA(tree.subTrees.get(0)),
-          CreateStarAutomate(makeNDFA(tree.subTrees.get(0))));
+      return CreateAddAutomate(makeNDFA(tree.subTrees.get(0)));
     default:
       return null;
     }
@@ -57,6 +55,26 @@ public class TreeToNdfa {
 
     s1.addTransition(new Transition(aStartingState));
     s1.addTransition(new Transition(s2));
+
+    aFinalState.addTransition(new Transition(aStartingState));
+    aFinalState.addTransition(new Transition(s2));
+    aFinalState.setAccepting(false);
+
+    a.putState(aStartingState);
+    a.putState(aFinalState);
+
+    a.setStartingState(s1);
+    a.setFinalState(s2);
+    return a;
+  }
+
+  public static Automate CreateAddAutomate(Automate a) {
+    State s1 = new State(false);
+    State s2 = new State(true);
+    State aFinalState = a.getFinalState();
+    State aStartingState = a.getStartingState();
+
+    s1.addTransition(new Transition(aStartingState));
 
     aFinalState.addTransition(new Transition(aStartingState));
     aFinalState.addTransition(new Transition(s2));
