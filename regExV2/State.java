@@ -9,11 +9,11 @@ import java.util.Map.Entry;
 
 public class State {
   protected Map<Integer, Collection<Integer>> _transitions;
-  public boolean isAccepting = false;
+  protected boolean isAccepting = false;
 
-  protected static final String stateFormat =
+  private static final String stateFormat =
       "%d [label=\"%s\" color=\"%s\" shape=\"%s\"]\n";
-  protected static final String transitionFormat = "%d -> %d [label=\"%c\"]";
+  private static final String transitionFormat = "%d -> %d [label=\"%c\"]";
 
   public State() {
     this._transitions = new HashMap<Integer, Collection<Integer>>();
@@ -50,33 +50,6 @@ public class State {
     this._transitions.put(symbol, newDestinations);
   }
 
-  public void addTransition(final Integer symbol,
-                            final Integer newDestination) {
-    Collection<Integer> oldDestination = this._transitions.get(symbol);
-    if (oldDestination == null)
-      oldDestination = new HashSet<Integer>();
-
-    oldDestination.add(newDestination);
-    this.addTransition(symbol, oldDestination);
-  }
-
-  public void setTransition(final Integer symbol,
-                            final Integer newDestination) {
-    this.setTransition(symbol, Collections.singleton(newDestination));
-  }
-
-  public void addTransition(final Integer newDestination) {
-    addTransition(RegEx.Epsilon, newDestination);
-  }
-
-  public void setTransition(final Integer newDestination) {
-    setTransition(RegEx.Epsilon, newDestination);
-  }
-
-  public Collection<Integer> getTransition(final Integer symbol) {
-    return _transitions.get(symbol);
-  }
-
   public void absorbeState(final State other) {
     other._transitions.forEach((k, v) -> { this.addTransition(k, v); });
     this.isAccepting = this.isAccepting || other.isAccepting;
@@ -104,5 +77,23 @@ public class State {
             String.format(transitionFormat, stateID, destination,
                           keycode != RegEx.Epsilon ? keycode : 'ε'));
     }
+  }
+
+  public void addTransition(final Integer symbol,
+                            final Integer newDestination) {
+    this.addTransition(symbol, Collections.singleton(newDestination));
+  }
+
+  public void setTransition(final Integer symbol,
+                            final Integer newDestination) {
+    this.setTransition(symbol, Collections.singleton(newDestination));
+  }
+
+  public void addTransition(final Integer newDestination) {
+    addTransition(RegEx.Epsilon, newDestination);
+  }
+
+  public Collection<Integer> getTransition(final Integer symbol) {
+    return _transitions.get(symbol);
   }
 }

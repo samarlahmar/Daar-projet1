@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class TreeToNdfa {
   private static AtomicInteger _stateCounter;
-  public static Automate makeNDFA(RegExTree tree) {
+  public static Automate makeNDFA(final RegExTree tree) {
     _stateCounter = new AtomicInteger(0);
     if (tree == null)
       return null;
@@ -12,7 +12,7 @@ public class TreeToNdfa {
     return makeNDFA_AUX(tree);
   }
 
-  public static Automate makeNDFA_AUX(RegExTree tree) {
+  public static Automate makeNDFA_AUX(final RegExTree tree) {
     if (!tree.isRootOperator())
       return CreateBasisCaseAutomate(tree.getRoot());
     switch (tree.getRoot()) {
@@ -31,16 +31,17 @@ public class TreeToNdfa {
     }
   }
 
-  public static Automate CreateBasisCaseAutomate(int rootCode) {
-    State s1 = new State();
-    State s2 = new State(true);
-    Automate output = new Automate(s1, s2, _stateCounter);
-    output.getStartingState().addTransition(rootCode, output.tmpNDFAFinalId);
+  public static Automate CreateBasisCaseAutomate(final int rootCode) {
+    final State s1 = new State();
+    final State s2 = new State(true);
+    final Automate output = new Automate(s1, s2, _stateCounter);
+    output.getStartingState().setTransition(rootCode, output.tmpNDFAFinalId);
     return output;
   }
 
-  public static Automate CreateConcatAutomate(Automate a, Automate b) {
-    State aFinalState = a.getTmpNDFAFinalState();
+  public static Automate CreateConcatAutomate(final Automate a,
+                                              final Automate b) {
+    final State aFinalState = a.getTmpNDFAFinalState();
     aFinalState.isAccepting = false;
     aFinalState.addTransition(b.startingStateId);
     a.mergeAutomaton(b);
@@ -48,15 +49,15 @@ public class TreeToNdfa {
     return a;
   }
 
-  public static Automate CreateStarAutomate(Automate a) {
-    State s1 = new State();
-    State s2 = new State(true);
-    int s2Id = a.addState(s2);
+  public static Automate CreateStarAutomate(final Automate a) {
+    final State s1 = new State();
+    final State s2 = new State(true);
+    final int s2Id = a.addState(s2);
 
     s1.addTransition(a.startingStateId);
     s1.addTransition(s2Id);
 
-    State aFinalState = a.getTmpNDFAFinalState();
+    final State aFinalState = a.getTmpNDFAFinalState();
     aFinalState.addTransition(a.startingStateId);
     aFinalState.addTransition(s2Id);
     aFinalState.isAccepting = false;
@@ -67,13 +68,13 @@ public class TreeToNdfa {
   }
 
   public static Automate CreateAddAutomate(Automate a) {
-    State s1 = new State();
+    final State s1 = new State();
     s1.addTransition(a.startingStateId);
 
-    State s2 = new State(true);
-    int s2Id = a.addState(s2);
+    final State s2 = new State(true);
+    final int s2Id = a.addState(s2);
 
-    State aFinalState = a.getTmpNDFAFinalState();
+    final State aFinalState = a.getTmpNDFAFinalState();
     aFinalState.addTransition(a.startingStateId);
     aFinalState.addTransition(s2Id);
     aFinalState.isAccepting = false;
@@ -84,18 +85,18 @@ public class TreeToNdfa {
   }
 
   public static Automate CreateOrAutomate(Automate a, Automate b) {
-    State s2 = new State(true);
-    int s2Id = a.addState(s2);
+    final State s2 = new State(true);
+    final int s2Id = a.addState(s2);
 
-    State s1 = new State();
+    final State s1 = new State();
     s1.addTransition(a.startingStateId);
     s1.addTransition(b.startingStateId);
 
-    State aFinalState = a.getTmpNDFAFinalState();
+    final State aFinalState = a.getTmpNDFAFinalState();
     aFinalState.addTransition(s2Id);
     aFinalState.isAccepting = false;
 
-    State bFinalState = b.getTmpNDFAFinalState();
+    final State bFinalState = b.getTmpNDFAFinalState();
     bFinalState.addTransition(s2Id);
     bFinalState.isAccepting = false;
 

@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Automate {
   public Integer startingStateId, tmpNDFAFinalId;
-  public Map<Integer, State> states;
+  final public Map<Integer, State> states;
   final private AtomicInteger stateIdGen;
 
   public Automate(State starting_state, State ndfaEnd,
