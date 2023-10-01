@@ -1,119 +1,108 @@
 package regEx;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class TreeToNdfa {
-
-  public static int stateCounter = 0;
-
-  public static Automate makeNDFA(RegExTree tree) {
+  private static AtomicInteger _stateCounter;
+  public static Automate makeNDFA(final RegExTree tree) {
+    _stateCounter = new AtomicInteger(0);
     if (tree == null)
       return null;
 
+    return makeNDFA_AUX(tree);
+  }
+
+  public static Automate makeNDFA_AUX(final RegExTree tree) {
     if (!tree.isRootOperator())
       return CreateBasisCaseAutomate(tree.getRoot());
     switch (tree.getRoot()) {
     case RegEx.CONCAT:
-      return CreateConcatAutomate(makeNDFA(tree.subTrees.get(0)),
-                                  makeNDFA(tree.subTrees.get(1)));
+      return CreateConcatAutomate(makeNDFA_AUX(tree.subTrees.get(0)),
+                                  makeNDFA_AUX(tree.subTrees.get(1)));
     case RegEx.ETOILE:
-      return CreateStarAutomate(makeNDFA(tree.subTrees.get(0)));
+      return CreateStarAutomate(makeNDFA_AUX(tree.subTrees.get(0)));
     case RegEx.ALTERN:
-      return CreateOrAutomate(makeNDFA(tree.subTrees.get(0)),
-                              makeNDFA(tree.subTrees.get(1)));
+      return CreateOrAutomate(makeNDFA_AUX(tree.subTrees.get(0)),
+                              makeNDFA_AUX(tree.subTrees.get(1)));
     case RegEx.PLUS:
-      return CreateAddAutomate(makeNDFA(tree.subTrees.get(0)));
+      return CreateAddAutomate(makeNDFA_AUX(tree.subTrees.get(0)));
     default:
       return null;
     }
   }
 
-  public static Automate CreateBasisCaseAutomate(int rootCode) {
-    State s1 = new State(false);
-    State s2 = new State(true);
-    s1.addTransition(new Transition(rootCode, s2));
-    return new Automate(s1, s2);
+  public static Automate CreateBasisCaseAutomate(final int rootCode) {
+    final State s1 = new State();
+    final State s2 = new State(true);
+    final Automate output = new Automate(s1, s2, _stateCounter);
+    output.getStartingState().setTransition(rootCode, output.tmpNDFAFinalId);
+    return output;
   }
 
-  public static Automate CreateConcatAutomate(Automate a, Automate b) {
-    State bStartingState = b.getStartingState();
-    State aFinalState = a.getFinalState();
-
-    aFinalState.setAccepting(false);
-    aFinalState.addTransition(new Transition(bStartingState));
-
-    a.putState(aFinalState);
-    a.setFinalState(b.getFinalState());
-    a.putAllStates(b.getStates());
-    a.putState(bStartingState);
+  public static Automate CreateConcatAutomate(final Automate a,
+                                              final Automate b) {
+    final State aFinalState = a.getTmpNDFAFinalState();
+    aFinalState.isAccepting = false;
+    aFinalState.addTransition(b.startingStateId);
+    a.mergeAutomaton(b);
+    a.tmpNDFAFinalId = b.tmpNDFAFinalId;
     return a;
   }
 
-  public static Automate CreateStarAutomate(Automate a) {
-    State s1 = new State(false);
-    State s2 = new State(true);
-    State aFinalState = a.getFinalState();
-    State aStartingState = a.getStartingState();
+  public static Automate CreateStarAutomate(final Automate a) {
+    final State s1 = new State();
+    final State s2 = new State(true);
+    final int s2Id = a.addState(s2);
 
-    s1.addTransition(new Transition(aStartingState));
-    s1.addTransition(new Transition(s2));
+    s1.addTransition(a.startingStateId);
+    s1.addTransition(s2Id);
 
-    aFinalState.addTransition(new Transition(aStartingState));
-    aFinalState.addTransition(new Transition(s2));
-    aFinalState.setAccepting(false);
-
-    a.putState(aStartingState);
-    a.putState(aFinalState);
+    final State aFinalState = a.getTmpNDFAFinalState();
+    aFinalState.addTransition(a.startingStateId);
+    aFinalState.addTransition(s2Id);
+    aFinalState.isAccepting = false;
 
     a.setStartingState(s1);
-    a.setFinalState(s2);
+    a.tmpNDFAFinalId = s2Id;
     return a;
   }
 
   public static Automate CreateAddAutomate(Automate a) {
-    State s1 = new State(false);
-    State s2 = new State(true);
-    State aFinalState = a.getFinalState();
-    State aStartingState = a.getStartingState();
+    final State s1 = new State();
+    s1.addTransition(a.startingStateId);
 
-    s1.addTransition(new Transition(aStartingState));
+    final State s2 = new State(true);
+    final int s2Id = a.addState(s2);
 
-    aFinalState.addTransition(new Transition(aStartingState));
-    aFinalState.addTransition(new Transition(s2));
-    aFinalState.setAccepting(false);
-
-    a.putState(aStartingState);
-    a.putState(aFinalState);
+    final State aFinalState = a.getTmpNDFAFinalState();
+    aFinalState.addTransition(a.startingStateId);
+    aFinalState.addTransition(s2Id);
+    aFinalState.isAccepting = false;
 
     a.setStartingState(s1);
-    a.setFinalState(s2);
+    a.tmpNDFAFinalId = s2Id;
     return a;
   }
 
   public static Automate CreateOrAutomate(Automate a, Automate b) {
-    State s1 = new State(false);
-    State s2 = new State(true);
-    State aStartingState = a.getStartingState();
-    State bStartingState = b.getStartingState();
-    State aFinalState = a.getFinalState();
-    State bFinalState = b.getFinalState();
+    final State s2 = new State(true);
+    final int s2Id = a.addState(s2);
 
-    s1.addTransition(new Transition(aStartingState));
-    s1.addTransition(new Transition(bStartingState));
+    final State s1 = new State();
+    s1.addTransition(a.startingStateId);
+    s1.addTransition(b.startingStateId);
 
-    aFinalState.addTransition(new Transition(s2));
-    aFinalState.setAccepting(false);
+    final State aFinalState = a.getTmpNDFAFinalState();
+    aFinalState.addTransition(s2Id);
+    aFinalState.isAccepting = false;
 
-    bFinalState.addTransition(new Transition(s2));
-    bFinalState.setAccepting(false);
+    final State bFinalState = b.getTmpNDFAFinalState();
+    bFinalState.addTransition(s2Id);
+    bFinalState.isAccepting = false;
 
-    a.putState(aStartingState);
-    a.putState(aFinalState);
-    a.putState(bStartingState);
-    a.putState(bFinalState);
-
-    a.putAllStates(b.getStates());
-
+    a.mergeAutomaton(b);
     a.setStartingState(s1);
-    a.setFinalState(s2);
+    a.tmpNDFAFinalId = s2Id;
     return a;
   }
 }

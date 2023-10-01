@@ -1,87 +1,99 @@
 package regEx;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class State {
+  protected Map<Integer, Collection<Integer>> _transitions;
+  protected boolean isAccepting = false;
 
-  private ArrayList<Transition> transitionsList;
-  private boolean isAccepting = false;
-  private int stateID;
+  private static final String stateFormat =
+      "%d [label=\"%s\" color=\"%s\" shape=\"%s\"]\n";
+  private static final String transitionFormat = "%d -> %d [label=\"%c\"]";
 
-  public static int stateCounter = 0;
-  public static void resetCounter() { stateCounter = 0; }
-
-  public State(boolean isAccepting) {
-    this.transitionsList = new ArrayList<Transition>();
-    this.isAccepting = isAccepting;
-    this.stateID = stateCounter++;
+  public State() {
+    this._transitions = new HashMap<Integer, Collection<Integer>>();
   }
 
-  public State(boolean isAccepting, ArrayList<Transition> t) {
-    this.transitionsList = t;
-    this.isAccepting = isAccepting;
-    this.stateID = stateCounter++;
-  }
-
-  public State(Collection<State> ensemble) {
-    this.stateID = stateCounter++;
-    this.transitionsList = new ArrayList<Transition>();
-    for (State s : ensemble) {
-      if (getAccepting() == false)
-        setAccepting(s.getAccepting());
-      this.transitionsList.addAll(s.getTransitionsList());
-    }
-  }
-
-  public int getStateID() { return stateID; }
-
-  public boolean getAccepting() { return isAccepting; }
-
-  public void setAccepting(boolean isAccepting) {
+  public State(final boolean isAccepting) {
+    this._transitions = new HashMap<Integer, Collection<Integer>>();
     this.isAccepting = isAccepting;
   }
 
-  public ArrayList<Transition> getTransitionsList() { return transitionsList; }
-  public void resetTransitionsList() {
-    transitionsList.clear();
-    ;
-  }
-  public void deleteTransitionWithKey(int toDel) {
-    transitionsList.removeIf(t -> t.getAccepted_Code() == toDel);
-  }
-
-  public void addTransition(Transition transition) {
-    this.transitionsList.add(transition);
-  }
-
-  public void addAllTransitions(Collection<Transition> transitions) {
-    this.transitionsList.addAll(transitions);
-  }
-
-  public String toDotString(boolean isStarting) {
-    String color = "black";
-    if (isAccepting)
-      color = "green";
-    else if (isStarting)
-      color = "blue";
-
-    String result = String.format("%d [label=\"%s\" color=\"%s\"]", stateID,
-                                  stateID, color);
-
-    if (isAccepting)
-      result += ";\n" + stateID + " [shape = doublecircle];\n";
-
-    for (Transition t : getTransitionsList())
-      result += t.toDotString(getStateID());
-    return result;
+  public Collection<Integer> getDestinationStates(final Integer symbol) {
+    return _transitions.get(symbol);
   }
 
   public static boolean isEquiv(State a, State b) {
-    if (a.getAccepting() != b.getAccepting() ||
-        a.getTransitionsList().size() != b.getTransitionsList().size())
-      return false;
 
-    return a.transitionsList.containsAll(b.transitionsList);
+    return a.isAccepting == b.isAccepting &&
+        a._transitions.size() == b._transitions.size() &&
+        a._transitions.equals(b._transitions);
+  }
+
+  public void addTransition(final Integer symbol,
+                            Collection<Integer> newDestinations) {
+
+    Collection<Integer> oldDestination = this._transitions.get(symbol);
+    if (oldDestination == null)
+      oldDestination = new HashSet<Integer>();
+    newDestinations.addAll(oldDestination);
+    this._transitions.put(symbol, newDestinations);
+  }
+
+  public void setTransition(final Integer symbol,
+                            Collection<Integer> newDestinations) {
+    this._transitions.put(symbol, newDestinations);
+  }
+
+  public void absorbeState(final State other) {
+    other._transitions.forEach((k, v) -> { this.addTransition(k, v); });
+    this.isAccepting = this.isAccepting || other.isAccepting;
+  }
+
+  public void deleteTransitionWithKey(final Integer symbol) {
+    this._transitions.remove(symbol);
+  }
+
+  public void toDotString(final StringBuilder outBuffer, final int stateID) {
+    String color = "black";
+    String shape = "circle";
+    if (isAccepting) {
+      color = "green";
+      shape = "doublecircle";
+    }
+    outBuffer.append(
+        String.format(stateFormat, stateID, stateID, color, shape));
+
+    for (Entry<Integer, Collection<Integer>> entry : _transitions.entrySet()) {
+      final int keycode = entry.getKey();
+
+      for (final int destination : entry.getValue())
+        outBuffer.append(
+            String.format(transitionFormat, stateID, destination,
+                          keycode != RegEx.Epsilon ? keycode : 'ε'));
+    }
+  }
+
+  public void addTransition(final Integer symbol,
+                            final Integer newDestination) {
+    this.addTransition(symbol, Collections.singleton(newDestination));
+  }
+
+  public void setTransition(final Integer symbol,
+                            final Integer newDestination) {
+    this.setTransition(symbol, Collections.singleton(newDestination));
+  }
+
+  public void addTransition(final Integer newDestination) {
+    addTransition(RegEx.Epsilon, newDestination);
+  }
+
+  public Collection<Integer> getTransition(final Integer symbol) {
+    return _transitions.get(symbol);
   }
 }

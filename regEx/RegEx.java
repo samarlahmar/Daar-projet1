@@ -1,5 +1,6 @@
 package regEx;
 
+import java.io.IOException;
 import java.lang.Exception;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -26,7 +27,8 @@ public class RegEx {
   public RegEx() {}
 
   // MAIN
-  public static void main(String arg[]) {
+  public static void main(String arg[])
+      throws IOException, InterruptedException {
     System.out.println("Welcome to Bogota, Mr. Thomas Anderson.");
     if (arg.length != 0) {
       regEx = arg[0];
@@ -46,16 +48,18 @@ public class RegEx {
       for (int i = 1; i < regEx.length(); i++)
         System.out.print("," + (int)regEx.charAt(i));
       System.out.println("].");
+      RegExTree ret = null;
       try {
-        RegExTree ret = parse();
+        ret = parse();
         System.out.println("  >> Tree result: " + ret.toString() + ".");
-        Automate result = TreeToNdfa.makeNDFA(ret);
-        NdfaToDfa.convert(result);
+
       } catch (Exception e) {
         System.err.println(e);
         System.err.println("  >> ERROR: syntax error for regEx \"" + regEx +
                            "\".");
       }
+      Automate result = TreeToNdfa.makeNDFA(ret);
+      NdfaToDfa.convert(result);
     }
 
     System.out.println("  >> ...");
