@@ -19,7 +19,6 @@ node [shape = circle];
 11 [label="11" color="black"]11 -> 10 [label="ε"];
 11 -> 13 [label="ε"];
 12 [label="12" color="black"]12 -> 10 [label="ε"];
-12 -> 13 [label="ε"];
 13 [label="13" color="black"]13 -> 14 [label="ε"];
 14 [label="14" color="black"]14 -> 15 [label="o"];
 15 [label="15" color="black"]15 -> 16 [label="ε"];

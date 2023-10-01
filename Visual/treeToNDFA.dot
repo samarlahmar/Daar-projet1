@@ -1,0 +1,25 @@
+digraph finite_state_machine {
+graph [ dpi = 400 ];
+rankdir=LR;
+size="8,5"
+node [shape = circle];
+0 [label="0" color="black" shape="circle"]
+0 -> 1 [label="S"]0 [color="blue"]
+1 [label="1" color="black" shape="circle"]
+1 -> 13 [label="ε"]2 [label="2" color="black" shape="circle"]
+2 -> 3 [label="a"]3 [label="3" color="black" shape="circle"]
+3 -> 6 [label="ε"]4 [label="4" color="black" shape="circle"]
+4 -> 5 [label="g"]5 [label="5" color="black" shape="circle"]
+5 -> 6 [label="ε"]6 [label="6" color="black" shape="circle"]
+6 -> 10 [label="ε"]7 [label="7" color="black" shape="circle"]
+7 -> 2 [label="ε"]7 -> 4 [label="ε"]8 [label="8" color="black" shape="circle"]
+8 -> 9 [label="r"]9 [label="9" color="black" shape="circle"]
+9 -> 10 [label="ε"]10 [label="10" color="black" shape="circle"]
+10 -> 11 [label="ε"]10 -> 12 [label="ε"]11 [label="11" color="black" shape="circle"]
+11 -> 7 [label="ε"]11 -> 8 [label="ε"]12 [label="12" color="black" shape="circle"]
+12 -> 14 [label="ε"]13 [label="13" color="black" shape="circle"]
+13 -> 11 [label="ε"]14 [label="14" color="black" shape="circle"]
+14 -> 15 [label="o"]15 [label="15" color="black" shape="circle"]
+15 -> 16 [label="ε"]16 [label="16" color="black" shape="circle"]
+16 -> 17 [label="n"]17 [label="17" color="green" shape="doublecircle"]
+}
