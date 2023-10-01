@@ -22,7 +22,6 @@ public class RegExTree {
   }
 
   private String rootToString() {
-
     switch (root) {
     case RegEx.CONCAT:
       return ".";
@@ -34,6 +33,8 @@ public class RegExTree {
       return ".";
     case RegEx.PLUS:
       return "+";
+    case RegEx.EPSILON:
+      return "ε";
     default:
       return Character.toString((char)root);
     }

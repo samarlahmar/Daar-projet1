@@ -1,5 +1,6 @@
 package regEx;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,6 +16,10 @@ public class State {
       "%d [label=\"%s\" color=\"%s\" shape=\"%s\"]\n";
   private static final String transitionFormat = "%d -> %d [label=\"%c\"]";
 
+  public Integer getDFATransitionWithKey(final Integer symbol) {
+    return _transitions.get(symbol).iterator().next();
+  }
+
   public State() {
     this._transitions = new HashMap<Integer, Collection<Integer>>();
   }
@@ -24,8 +29,11 @@ public class State {
     this.isAccepting = isAccepting;
   }
 
-  public Collection<Integer> getDestinationStates(final Integer symbol) {
-    return _transitions.get(symbol);
+  public Integer getDestinationState(final Integer symbol) {
+    final Collection<Integer> destinations = _transitions.get(symbol);
+    if (destinations == null)
+      return null;
+    return destinations.iterator().next();
   }
 
   public static boolean isEquiv(State a, State b) {
@@ -59,6 +67,15 @@ public class State {
     this._transitions.remove(symbol);
   }
 
+  private static Character getChar(final Integer symbol) {
+    if (symbol == RegEx.EPSILON)
+      return 'ε';
+    if (Character.isLetterOrDigit(symbol))
+      return (char)symbol.intValue();
+
+    return '?';
+  }
+
   public void toDotString(final StringBuilder outBuffer, final int stateID) {
     String color = "black";
     String shape = "circle";
@@ -73,15 +90,16 @@ public class State {
       final int keycode = entry.getKey();
 
       for (final int destination : entry.getValue())
-        outBuffer.append(
-            String.format(transitionFormat, stateID, destination,
-                          keycode != RegEx.Epsilon ? keycode : 'ε'));
+        outBuffer.append(String.format(transitionFormat, stateID, destination,
+                                       getChar(keycode)));
     }
   }
 
   public void addTransition(final Integer symbol,
                             final Integer newDestination) {
-    this.addTransition(symbol, Collections.singleton(newDestination));
+    final ArrayList<Integer> tmp = new ArrayList<Integer>();
+    tmp.add(newDestination);
+    this.addTransition(symbol, tmp);
   }
 
   public void setTransition(final Integer symbol,
@@ -90,7 +108,7 @@ public class State {
   }
 
   public void addTransition(final Integer newDestination) {
-    addTransition(RegEx.Epsilon, newDestination);
+    addTransition(RegEx.EPSILON, newDestination);
   }
 
   public Collection<Integer> getTransition(final Integer symbol) {

@@ -26,9 +26,21 @@ public class TreeToNdfa {
                               makeNDFA_AUX(tree.subTrees.get(1)));
     case RegEx.PLUS:
       return CreateAddAutomate(makeNDFA_AUX(tree.subTrees.get(0)));
+    case RegEx.DOT:
+      return CreateDotAutomate();
+
     default:
       return null;
     }
+  }
+
+  public static Automate CreateDotAutomate() {
+    final State s1 = new State();
+    final State s2 = new State(true);
+    final Automate output = new Automate(s1, s2, _stateCounter);
+    for (int i = 0; i < 256; i++)
+      output.getStartingState().setTransition(i, output.tmpNDFAFinalId);
+    return output;
   }
 
   public static Automate CreateBasisCaseAutomate(final int rootCode) {

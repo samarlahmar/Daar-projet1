@@ -2,6 +2,7 @@ package regEx;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,6 +12,30 @@ public class Automate {
   public Integer startingStateId, tmpNDFAFinalId;
   final public Map<Integer, State> states;
   final private AtomicInteger stateIdGen;
+
+  private void getAllMatches(final String toTest, final int start,
+                             ArrayList<Pair<Integer, Integer>> matches) {
+    State current = getStartingState();
+    for (int i = start; i < toTest.length(); i++) {
+      final Integer symbol = (int)toTest.charAt(i);
+      if (current.getDestinationState(symbol) == null) {
+        if (current.isAccepting)
+          matches.add(new Pair<Integer, Integer>(start, i));
+        getAllMatches(toTest, i + 1, matches);
+        return;
+      }
+      current = getState(current.getDestinationState(symbol));
+    }
+    if (current.isAccepting)
+      matches.add(new Pair<Integer, Integer>(start, toTest.length()));
+  }
+
+  public ArrayList<Pair<Integer, Integer>> getAllMatches(final String toTest) {
+    final ArrayList<Pair<Integer, Integer>> matches =
+        new ArrayList<Pair<Integer, Integer>>();
+    getAllMatches(toTest, 0, matches);
+    return matches;
+  }
 
   public Automate(State starting_state, State ndfaEnd,
                   final AtomicInteger stateIdGen) {
@@ -42,7 +67,7 @@ public class Automate {
 
   public String toDotString() {
     final String dotFilePrefix = "digraph finite_state_machine {\n"
-                                 + "graph [ dpi = 400 ];\n"
+                                 /* + "graph [ dpi = 400 ];\n" */
                                  + "rankdir=LR;\n"
                                  + "size=\"8,5\"\n"
                                  + "node [shape = circle];\n";

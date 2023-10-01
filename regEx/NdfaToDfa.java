@@ -14,7 +14,6 @@ public class NdfaToDfa {
   public static void convert(final Automate ndfa)
       throws IOException, InterruptedException {
     ndfa.writeToDotFile("NDFA");
-
     final Set<Integer> starting_set = new HashSet<Integer>();
     starting_set.add(ndfa.startingStateId);
     processState(starting_set, ndfa, new HashMap<Set<Integer>, Integer>(),
@@ -46,7 +45,7 @@ public class NdfaToDfa {
         reachable.addAll(epsilonReachable.get(i));
     });
     reachable.forEach(i -> { ensemble.absorbeState(ndfa.getState(i)); });
-    ensemble.deleteTransitionWithKey(RegEx.Epsilon);
+    ensemble.deleteTransitionWithKey(RegEx.EPSILON);
 
     for (Entry<Integer, Collection<Integer>> newState :
          ensemble._transitions.entrySet()) {
@@ -64,7 +63,7 @@ public class NdfaToDfa {
       return;
 
     final Collection<Integer> transitions =
-        ndfa.getState(id)._transitions.get(RegEx.Epsilon);
+        ndfa.getState(id)._transitions.get(RegEx.EPSILON);
 
     final HashSet<Integer> tmp = new HashSet<Integer>();
     tmp.add(id);

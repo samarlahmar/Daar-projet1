@@ -18,7 +18,7 @@ public class RegEx {
   static final int PARENTHESEFERMANT = 0x51515151;
   static final int DOT = 0xD07;
 
-  public static final int Epsilon = 12345678;
+  public static final int EPSILON = -12345678;
 
   // REGEX
   private static String regEx;
@@ -60,6 +60,7 @@ public class RegEx {
       }
       Automate result = TreeToNdfa.makeNDFA(ret);
       NdfaToDfa.convert(result);
+      System.out.println(result.getAllMatches("Sargon"));
     }
 
     System.out.println("  >> ...");
