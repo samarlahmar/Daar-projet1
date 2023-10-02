@@ -13,15 +13,12 @@ public class NdfaToDfa {
 
   public static void convert(final Automate ndfa)
       throws IOException, InterruptedException {
-    ndfa.writeToDotFile("NDFA");
     final Set<Integer> starting_set = new HashSet<Integer>();
     starting_set.add(ndfa.startingStateId);
     processState(starting_set, ndfa, new HashMap<Set<Integer>, Integer>(),
                  new HashMap<Integer, Set<Integer>>());
     ndfa.states.keySet().removeIf(i -> i < ndfa.startingStateId);
-    ndfa.writeToDotFile("DFA");
     minimize(ndfa);
-    ndfa.writeToDotFile("Minimized");
   }
 
   private static void
@@ -51,6 +48,7 @@ public class NdfaToDfa {
          ensemble._transitions.entrySet()) {
       final Set<Integer> new_ensemble =
           new HashSet<Integer>(newState.getValue());
+
       processState(new_ensemble, ndfa, old_to_new, epsilonReachable);
       ensemble.setTransition(newState.getKey(), old_to_new.get(new_ensemble));
     }

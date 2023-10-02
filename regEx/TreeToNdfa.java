@@ -47,7 +47,7 @@ public class TreeToNdfa {
     final State s1 = new State();
     final State s2 = new State(true);
     final Automate output = new Automate(s1, s2, _stateCounter);
-    output.getStartingState().setTransition(rootCode, output.tmpNDFAFinalId);
+    output.getStartingState().addTransition(rootCode, output.tmpNDFAFinalId);
     return output;
   }
 

@@ -12,4 +12,12 @@ public class Pair<T1, T2> {
   public String toString() {
     return "(" + first.toString() + ", " + second.toString() + ")";
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null || !(obj instanceof Pair))
+      return false;
+    Pair<?, ?> other = (Pair<?, ?>)obj;
+    return first.equals(other.first) && second.equals(other.second);
+  }
 }

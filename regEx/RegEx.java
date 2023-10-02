@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.lang.Exception;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.List;
+
 public class RegEx {
   // MACROS
   static final int CONCAT = 0xC04CA7;
@@ -22,9 +22,6 @@ public class RegEx {
 
   // REGEX
   private static String regEx;
-
-  // CONSTRUCTOR
-  public RegEx() {}
 
   // MAIN
   public static void main(String arg[])
@@ -50,7 +47,7 @@ public class RegEx {
       System.out.println("].");
       RegExTree ret = null;
       try {
-        ret = parse();
+        ret = parse(regEx);
         System.out.println("  >> Tree result: " + ret.toString() + ".");
       } catch (Exception e) {
         System.err.println(e);
@@ -58,8 +55,9 @@ public class RegEx {
                            "\".");
       }
       Automate result = TreeToNdfa.makeNDFA(ret);
+      result.writeToDotFile("NDFA");
       NdfaToDfa.convert(result);
-      System.out.println(result.getAllMatches("Sargon"));
+      result.writeToDotFile("DFA");
     }
 
     System.out.println("  >> ...");
@@ -68,7 +66,8 @@ public class RegEx {
   }
 
   // FROM REGEX TO SYNTAX TREE
-  private static RegExTree parse() throws Exception {
+  public static RegExTree parse(String input) throws Exception {
+    regEx = input;
     ArrayList<RegExTree> result = new ArrayList<RegExTree>();
     for (int i = 0; i < regEx.length(); i++)
       result.add(new RegExTree(charToRoot(regEx.charAt(i)),

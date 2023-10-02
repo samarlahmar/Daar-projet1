@@ -2,7 +2,6 @@ package regEx;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -13,40 +12,34 @@ public class Automate {
   final public Map<Integer, State> states;
   final private AtomicInteger stateIdGen;
 
-  private void getAllMatches(final String toTest, final int start,
-                             ArrayList<Pair<Integer, Integer>> matches) {
-    State current = getStartingState();
-    for (int i = start; i < toTest.length(); i++) {
-      final Integer symbol = (int)toTest.charAt(i);
-      if (current.getDestinationState(symbol) == null) {
-        if (current.isAccepting)
-          matches.add(new Pair<Integer, Integer>(start, i));
-        getAllMatches(toTest, i == start ? i + 1 : i, matches);
-        return;
-      }
-      current = getState(current.getDestinationState(symbol));
-    }
-    if (current.isAccepting)
-      matches.add(new Pair<Integer, Integer>(start, toTest.length()));
+  public static Automate buildFromRegex(String regxp) throws Exception {
+    RegExTree reg = RegEx.parse(regxp);
+    Automate ndfa = TreeToNdfa.makeNDFA(reg);
+    NdfaToDfa.convert(ndfa);
+    return ndfa;
   }
 
-  public ArrayList<Pair<Integer, Integer>> getAllMatches(final String toTest) {
-    final ArrayList<Pair<Integer, Integer>> matches =
-        new ArrayList<Pair<Integer, Integer>>();
-    getAllMatches(toTest, 0, matches);
-    return matches;
+  public static Automate buildFromRegexAndDisplayDot(String regxp)
+      throws Exception {
+    RegExTree reg = RegEx.parse(regxp);
+    Automate ndfa = TreeToNdfa.makeNDFA(reg);
+    ndfa.writeToDotFile("ndfa");
+    NdfaToDfa.convert(ndfa);
+    ndfa.writeToDotFile("dfa-minimized");
+    return ndfa;
   }
 
   private Pair<Integer, Integer> getFirstMatch(final String toTest,
                                                final int start) {
     State current = getStartingState();
     for (int i = start; i < toTest.length(); i++) {
+      if (current.isAccepting)
+        return new Pair<Integer, Integer>(start, i);
+
       final Integer symbol = (int)toTest.charAt(i);
-      if (current.getDestinationState(symbol) == null) {
-        if (current.isAccepting)
-          return new Pair<Integer, Integer>(start, i);
-        return getFirstMatch(toTest, i == start ? i + 1 : i);
-      }
+      if (current.getDestinationState(symbol) == null)
+        return getFirstMatch(toTest, start + 1);
+
       current = getState(current.getDestinationState(symbol));
     }
     if (current.isAccepting)
