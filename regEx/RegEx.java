@@ -3,7 +3,7 @@ package regEx;
 import java.lang.Exception;
 import java.util.ArrayList;
 import java.util.Scanner;
-
+import java.util.List;
 public class RegEx {
   // MACROS
   static final int CONCAT = 0xC04CA7;
@@ -51,6 +51,12 @@ public class RegEx {
         System.out.println("  >> Tree result: " + ret.toString() + ".");
         Automate result = TreeToNdfa.makeNDFA(ret);
         NdfaToDfa.convert(result);
+        
+        List<Integer> positions = Matching.matchingPattern("mama","") ;
+        if (positions.size() == 0) { System.out.println("match not found") ;}
+        for (int i : positions ) {
+          System.out.println(i);
+        }
       } catch (Exception e) {
         System.err.println(e);
         System.err.println("  >> ERROR: syntax error for regEx \"" + regEx +
