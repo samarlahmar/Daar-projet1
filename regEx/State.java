@@ -14,7 +14,7 @@ public class State {
 
   private static final String stateFormat =
       "%d [label=\"%s\" color=\"%s\" shape=\"%s\"]\n";
-  private static final String transitionFormat = "%d -> %d [label=\"%c\"]";
+  private static final String transitionFormat = "%d -> %d [label=\"%c\"]\n";
 
   public Integer getDFATransitionWithKey(final Integer symbol) {
     return _transitions.get(symbol).iterator().next();
@@ -67,7 +67,7 @@ public class State {
     this._transitions.remove(symbol);
   }
 
-  private static Character getChar(final Integer symbol) {
+  private Character getChar(final Integer symbol) {
     if (symbol == RegEx.EPSILON)
       return 'ε';
     if (Character.isLetterOrDigit(symbol))

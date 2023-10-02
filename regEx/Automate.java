@@ -21,7 +21,7 @@ public class Automate {
       if (current.getDestinationState(symbol) == null) {
         if (current.isAccepting)
           matches.add(new Pair<Integer, Integer>(start, i));
-        getAllMatches(toTest, i + 1, matches);
+        getAllMatches(toTest, i == start ? i + 1 : i, matches);
         return;
       }
       current = getState(current.getDestinationState(symbol));
@@ -35,6 +35,27 @@ public class Automate {
         new ArrayList<Pair<Integer, Integer>>();
     getAllMatches(toTest, 0, matches);
     return matches;
+  }
+
+  private Pair<Integer, Integer> getFirstMatch(final String toTest,
+                                               final int start) {
+    State current = getStartingState();
+    for (int i = start; i < toTest.length(); i++) {
+      final Integer symbol = (int)toTest.charAt(i);
+      if (current.getDestinationState(symbol) == null) {
+        if (current.isAccepting)
+          return new Pair<Integer, Integer>(start, i);
+        return getFirstMatch(toTest, i == start ? i + 1 : i);
+      }
+      current = getState(current.getDestinationState(symbol));
+    }
+    if (current.isAccepting)
+      return new Pair<Integer, Integer>(start, toTest.length());
+    return null;
+  }
+
+  public Pair<Integer, Integer> getFirstMatch(final String toTest) {
+    return getFirstMatch(toTest, 0);
   }
 
   public Automate(State starting_state, State ndfaEnd,
