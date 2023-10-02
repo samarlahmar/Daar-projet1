@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.lang.Exception;
 import java.util.ArrayList;
 import java.util.Scanner;
-
+import java.util.List;
 public class RegEx {
   // MACROS
   static final int CONCAT = 0xC04CA7;
@@ -52,7 +52,6 @@ public class RegEx {
       try {
         ret = parse();
         System.out.println("  >> Tree result: " + ret.toString() + ".");
-
       } catch (Exception e) {
         System.err.println(e);
         System.err.println("  >> ERROR: syntax error for regEx \"" + regEx +
