@@ -1,6 +1,6 @@
 package regEx;
 
-import java.io.IOException;
+import java.io.File;
 import java.lang.Exception;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -24,49 +24,32 @@ public class RegEx {
   private static String regEx;
 
   // MAIN
-  public static void main(String arg[])
-      throws IOException, InterruptedException {
-    System.out.println("Welcome to Bogota, Mr. Thomas Anderson.");
-    if (arg.length != 0) {
+  public static void main(String arg[]) throws Exception {
+    long startTime = System.currentTimeMillis();
+    if (arg.length > 0) {
       regEx = arg[0];
-    } else {
-      Scanner scanner = new Scanner(System.in);
-      System.out.print("  >> Please enter a regEx: ");
-      regEx = scanner.next();
-      scanner.close();
     }
-    System.out.println("  >> Parsing regEx \"" + regEx + "\".");
-    System.out.println("  >> ...");
-
-    if (regEx.length() < 1) {
-      System.err.println("  >> ERROR: empty regEx.");
-    } else {
-      System.out.print("  >> ASCII codes: [" + (int)regEx.charAt(0));
-      for (int i = 1; i < regEx.length(); i++)
-        System.out.print("," + (int)regEx.charAt(i));
-      System.out.println("].");
-      RegExTree ret = null;
-      try {
-        ret = parse(regEx);
-        System.out.println("  >> Tree result: " + ret.toString() + ".");
-      } catch (Exception e) {
-        System.err.println(e);
-        System.err.println("  >> ERROR: syntax error for regEx \"" + regEx +
-                           "\".");
+    if (arg.length > 1) {
+      File file = new File(arg[1]);
+      Scanner sc = new Scanner(file);
+      Automate automate = Automate.buildFromRegex(regEx);
+      for (int i = 0; sc.hasNextLine(); i++) {
+        String line = sc.nextLine();
+        if (automate.match(line)) {
+          System.err.println("Line " + i + " : " + line);
+        };
       }
-      Automate result = TreeToNdfa.makeNDFA(ret);
-      result.writeToDotFile("NDFA");
-      NdfaToDfa.convert(result);
-      result.writeToDotFile("DFA");
+      sc.close();
     }
-
-    System.out.println("  >> ...");
-    System.out.println("  >> Parsing completed.");
-    System.out.println("Goodbye Mr. Anderson.");
+    long endTime = System.currentTimeMillis();
+    System.out.println("That took " + (endTime - startTime) + " milliseconds");
   }
 
   // FROM REGEX TO SYNTAX TREE
   public static RegExTree parse(String input) throws Exception {
+    if (input.length() < 1)
+      throw new Exception();
+
     regEx = input;
     ArrayList<RegExTree> result = new ArrayList<RegExTree>();
     for (int i = 0; i < regEx.length(); i++)

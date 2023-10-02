@@ -10,7 +10,7 @@ public class Tests {
   private void checkMatches(String regEx, String toTest,
                             Pair<Integer, Integer> expected) throws Exception {
     auto = Automate.buildFromRegex(regEx);
-    assertEquals(auto.getFirstMatch(toTest), expected);
+    assertEquals(auto.getFirstMatchWithIndex(toTest), expected);
   }
 
   @org.junit.Test

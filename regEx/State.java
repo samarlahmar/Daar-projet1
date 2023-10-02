@@ -70,6 +70,8 @@ public class State {
   private Character getChar(final Integer symbol) {
     if (symbol == RegEx.EPSILON)
       return 'ε';
+    if (symbol == RegEx.DOT)
+      return '.';
     if (Character.isLetterOrDigit(symbol))
       return (char)symbol.intValue();
 

@@ -29,8 +29,8 @@ public class Automate {
     return ndfa;
   }
 
-  private Pair<Integer, Integer> getFirstMatch(final String toTest,
-                                               final int start) {
+  private Pair<Integer, Integer> getFirstMatchWithIndex(final String toTest,
+                                                        final int start) {
     State current = getStartingState();
     for (int i = start; i < toTest.length(); i++) {
       if (current.isAccepting)
@@ -38,7 +38,7 @@ public class Automate {
 
       final Integer symbol = (int)toTest.charAt(i);
       if (current.getDestinationState(symbol) == null)
-        return getFirstMatch(toTest, start + 1);
+        return getFirstMatchWithIndex(toTest, start + 1);
 
       current = getState(current.getDestinationState(symbol));
     }
@@ -47,9 +47,26 @@ public class Automate {
     return null;
   }
 
-  public Pair<Integer, Integer> getFirstMatch(final String toTest) {
-    return getFirstMatch(toTest, 0);
+  public Pair<Integer, Integer> getFirstMatchWithIndex(final String toTest) {
+    return getFirstMatchWithIndex(toTest, 0);
   }
+
+  private boolean match(final String toTest, final int start) {
+    State current = getStartingState();
+    for (int i = start; i < toTest.length(); i++) {
+      if (current.isAccepting)
+        return true;
+
+      final Integer symbol = (int)toTest.charAt(i);
+      if (current.getDestinationState(symbol) == null)
+        return match(toTest, start + 1);
+
+      current = getState(current.getDestinationState(symbol));
+    }
+    return current.isAccepting;
+  }
+
+  public boolean match(final String toTest) { return match(toTest, 0); }
 
   public Automate(State starting_state, State ndfaEnd,
                   final AtomicInteger stateIdGen) {
