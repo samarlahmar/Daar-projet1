@@ -25,11 +25,10 @@ public class RegEx {
 
   // MAIN
   public static void main(String arg[]) throws Exception {
-    long startTime = System.currentTimeMillis();
     if (arg.length > 0) {
       regEx = arg[0];
     }
-    if (arg.length > 1) {
+    if (arg.length == 2) {
       File file = new File(arg[1]);
       Scanner sc = new Scanner(file);
       Automate automate = Automate.buildFromRegex(regEx);
@@ -40,8 +39,8 @@ public class RegEx {
       }
       sc.close();
     }
-    long endTime = System.currentTimeMillis();
-    System.err.println("That took " + (endTime - startTime) + " milliseconds");
+
+
   }
 
   // FROM REGEX TO SYNTAX TREE

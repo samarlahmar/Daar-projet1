@@ -95,9 +95,11 @@ public class NdfaToDfa {
         editedState.dfaTransition = new HashMap<Integer, State>();
         for (Entry<Integer, Collection<Integer>> entry :
              editedState._transitions.entrySet()) {
-          editedState.dfaTransition.put(
-              entry.getKey(),
-              dfa.getState(minmized.get(entry.getValue().iterator().next())));
+
+          Integer found = minmized.get(entry.getValue().iterator().next());
+
+          editedState.dfaTransition.put(entry.getKey(), dfa.getState(found));
+          editedState.setTransition(entry.getKey(), found);
         }
       }
   }
