@@ -33,16 +33,15 @@ public class RegEx {
       File file = new File(arg[1]);
       Scanner sc = new Scanner(file);
       Automate automate = Automate.buildFromRegex(regEx);
-      for (int i = 0; sc.hasNextLine(); i++) {
+      while (sc.hasNextLine()) {
         String line = sc.nextLine();
-        if (automate.match(line)) {
-          System.err.println("Line " + i + " : " + line);
-        };
+        if (automate.match(line))
+          System.out.println(line);
       }
       sc.close();
     }
     long endTime = System.currentTimeMillis();
-    System.out.println("That took " + (endTime - startTime) + " milliseconds");
+    System.err.println("That took " + (endTime - startTime) + " milliseconds");
   }
 
   // FROM REGEX TO SYNTAX TREE

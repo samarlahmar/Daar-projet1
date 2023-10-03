@@ -37,10 +37,9 @@ public class Automate {
         return new Pair<Integer, Integer>(start, i);
 
       final Integer symbol = (int)toTest.charAt(i);
-      if (current.getDestinationState(symbol) == null)
+      current = current.dfaTransition.get(symbol);
+      if (current == null)
         return getFirstMatchWithIndex(toTest, start + 1);
-
-      current = getState(current.getDestinationState(symbol));
     }
     if (current.isAccepting)
       return new Pair<Integer, Integer>(start, toTest.length());
@@ -97,7 +96,7 @@ public class Automate {
 
   public String toDotString() {
     final String dotFilePrefix = "digraph finite_state_machine {\n"
-                                 /* + "graph [ dpi = 400 ];\n" */
+                                 + "graph [ dpi = 400 ];\n"
                                  + "rankdir=LR;\n"
                                  + "size=\"8,5\"\n"
                                  + "node [shape = circle];\n";

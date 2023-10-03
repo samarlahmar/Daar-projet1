@@ -66,6 +66,6 @@ public class Tests {
 
   @org.junit.Test
   public void advencedOr() throws Exception {
-    checkMatches(".a|bc", "abccccbcc", new Pair<Integer, Integer>(1,3));
+    checkMatches(".a|bc", "abccccbcc", new Pair<Integer, Integer>(1, 3));
   }
 }
