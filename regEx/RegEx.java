@@ -25,10 +25,14 @@ public class RegEx {
 
   // MAIN
   public static void main(String arg[]) throws Exception {
-    if (arg.length > 0) {
-      regEx = arg[0];
-    }
-    if (arg.length == 2) {
+    if (arg.length == 0)
+      throw new Exception("No regex given");
+    regEx = arg[0];
+    switch (arg.length) {
+    case 1:
+      Automate.buildFromRegexAndDisplayDot(regEx);
+      break;
+    case 2:
       File file = new File(arg[1]);
       Scanner sc = new Scanner(file);
       Automate automate = Automate.buildFromRegex(regEx);
@@ -38,9 +42,10 @@ public class RegEx {
           System.out.println(line);
       }
       sc.close();
+      break;
+    default:
+      break;
     }
-
-
   }
 
   // FROM REGEX TO SYNTAX TREE

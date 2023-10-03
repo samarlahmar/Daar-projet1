@@ -20,6 +20,17 @@ public class NdfaToDfa {
     minimize(ndfa);
   }
 
+  public static void convertAndDisplay(final Automate ndfa)
+      throws IOException, InterruptedException {
+    final Set<Integer> starting_set = new HashSet<Integer>();
+    starting_set.add(ndfa.startingStateId);
+    processState(starting_set, ndfa, new HashMap<Set<Integer>, Integer>(),
+                 new HashMap<Integer, Set<Integer>>());
+    ndfa.states.keySet().removeIf(i -> i < ndfa.startingStateId);
+    ndfa.writeToDotFile("dfa");
+    minimize(ndfa);
+  }
+
   private static void
   processState(final Set<Integer> merged, final Automate ndfa,
                final Map<Set<Integer>, Integer> old_to_new,

@@ -24,7 +24,7 @@ public class Automate {
     RegExTree reg = RegEx.parse(regxp);
     Automate ndfa = TreeToNdfa.makeNDFA(reg);
     ndfa.writeToDotFile("ndfa");
-    NdfaToDfa.convert(ndfa);
+    NdfaToDfa.convertAndDisplay(ndfa);
     ndfa.writeToDotFile("dfa-minimized");
     return ndfa;
   }

@@ -1,4 +1,5 @@
 digraph finite_state_machine {
+graph [ dpi = 400 ];
 rankdir=LR;
 size="8,5"
 node [shape = circle];
@@ -33,6 +34,7 @@ node [shape = circle];
 12 [label="12" color="black" shape="circle"]
 12 -> 14 [label="ε"]
 13 [label="13" color="black" shape="circle"]
+13 -> 12 [label="ε"]
 13 -> 11 [label="ε"]
 14 [label="14" color="black" shape="circle"]
 14 -> 15 [label="o"]
