@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 
 public class State {
   protected Map<Integer, Collection<Integer>> _transitions;
+  protected Map<Integer, State> dfaTransition;
   protected boolean isAccepting = false;
 
   private static final String stateFormat =
@@ -34,6 +35,10 @@ public class State {
     if (destinations == null)
       return null;
     return destinations.iterator().next();
+  }
+
+  public State getDFADestinationState(final Integer symbol) {
+    return dfaTransition.get(symbol);
   }
 
   public static boolean isEquiv(State a, State b) {

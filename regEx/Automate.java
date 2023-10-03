@@ -58,10 +58,9 @@ public class Automate {
         return true;
 
       final Integer symbol = (int)toTest.charAt(i);
-      if (current.getDestinationState(symbol) == null)
+      current = current.dfaTransition.get(symbol);
+      if (current == null)
         return match(toTest, start + 1);
-
-      current = getState(current.getDestinationState(symbol));
     }
     return current.isAccepting;
   }

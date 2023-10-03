@@ -2,7 +2,6 @@ package regEx;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -28,12 +27,6 @@ public class NdfaToDfa {
     if (old_to_new.containsKey(merged))
       return;
 
-    final State ensemble = new State();
-    final Integer ensemble_id = ndfa.addState(ensemble);
-    old_to_new.put(merged, ensemble_id);
-    if (old_to_new.size() == 1)
-      ndfa.startingStateId = ensemble_id;
-
     final Set<Integer> reachable = new HashSet<Integer>();
     merged.forEach(i -> {
       if (!epsilonReachable.containsKey(i))
@@ -41,6 +34,13 @@ public class NdfaToDfa {
       if (!reachable.contains(i))
         reachable.addAll(epsilonReachable.get(i));
     });
+
+    final State ensemble = new State();
+    final Integer ensemble_id = ndfa.addState(ensemble);
+    old_to_new.put(merged, ensemble_id);
+    if (old_to_new.size() == 1)
+      ndfa.startingStateId = ensemble_id;
+
     reachable.forEach(i -> { ensemble.absorbeState(ndfa.getState(i)); });
     ensemble.deleteTransitionWithKey(RegEx.EPSILON);
 
@@ -92,10 +92,13 @@ public class NdfaToDfa {
         dfa.deleteState(e.getKey());
       else {
         final State editedState = dfa.getState(e.getKey());
+        editedState.dfaTransition = new HashMap<Integer, State>();
         for (Entry<Integer, Collection<Integer>> entry :
-             editedState._transitions.entrySet())
-          entry.setValue(Collections.singleton(
-              minmized.get(entry.getValue().iterator().next())));
+             editedState._transitions.entrySet()) {
+          editedState.dfaTransition.put(
+              entry.getKey(),
+              dfa.getState(minmized.get(entry.getValue().iterator().next())));
+        }
       }
   }
 }
