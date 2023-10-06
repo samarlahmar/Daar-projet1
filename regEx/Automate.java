@@ -13,6 +13,14 @@ public class Automate {
   final public Map<Integer, State> states;
   final private AtomicInteger stateIdGen;
 
+  public Automate(State starting_state, State ndfaEnd,
+                  final AtomicInteger stateIdGen) {
+    this.stateIdGen = stateIdGen;
+    this.states = new HashMap<Integer, State>();
+    setStartingState(starting_state);
+    tmpNDFAFinalId = addState(ndfaEnd);
+  }
+
   public static Automate buildFromRegex(String regxp) throws Exception {
     RegExTree reg = RegEx.parse(regxp);
     Automate ndfa = TreeToNdfa.makeNDFA(reg);
@@ -70,13 +78,7 @@ public class Automate {
 
   public boolean match(final String toTest) { return match(toTest, 0); }
 
-  public Automate(State starting_state, State ndfaEnd,
-                  final AtomicInteger stateIdGen) {
-    this.stateIdGen = stateIdGen;
-    this.states = new HashMap<Integer, State>();
-    setStartingState(starting_state);
-    tmpNDFAFinalId = addState(ndfaEnd);
-  }
+  
 
   public int addState(State newS) {
     final int id = stateIdGen.getAndIncrement();
