@@ -1,6 +1,5 @@
 package regEx;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -71,7 +70,6 @@ public class Matching {
 
   public static Boolean matchingPattern(String pattern, String text) {
 
-    List<Integer> positions = new ArrayList<>();
     int[] carryOver = makeLps(pattern);
     int textLength = text.length();
     int patternLength = pattern.length();
@@ -87,9 +85,8 @@ public class Matching {
       if (j == patternLength) {
         j = carryOver[j];
         // Pattern found, add the starting index to the result
-        return true ;
+        return true;
         // Update j using the carryOver array, ensuring it doesn't go below zero
-        
       }
     }
 
