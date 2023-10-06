@@ -4,6 +4,8 @@ import java.io.File;
 import java.lang.Exception;
 import java.util.ArrayList;
 import java.util.Scanner;
+import regEx.Helpers.Pair;
+import regEx.Helpers.Tester;
 
 public class RegEx {
   // MACROS
@@ -21,31 +23,76 @@ public class RegEx {
   public static final int EPSILON = -12345678;
 
   // REGEX
-  private static String regEx;
+  private static String regEx = null;
 
-  // MAIN
-  public static void main(String arg[]) throws Exception {
-    if (arg.length == 0)
-      throw new Exception("No regex given");
-    regEx = arg[0];
-    switch (arg.length) {
-    case 1:
-      Automate.buildFromRegexAndDisplayDot(regEx);
-      break;
-    case 2:
-      File file = new File(arg[1]);
-      Scanner sc = new Scanner(file);
-      Automate automate = Automate.buildFromRegex(regEx);
-      while (sc.hasNextLine()) {
-        String line = sc.nextLine();
-        if (automate.match(line))
-          System.out.println(line);
+  private static boolean isFlag(String arg) { return arg.charAt(0) == '-'; }
+  private static boolean isRegExp(String arg) {
+    return !isFlag(arg) && arg.startsWith("\"") && arg.endsWith("\"");
+  }
+
+  public static void main(String[] args) throws Exception {
+    final String regExp = args[0];
+    final String filepath = args[1];
+    System.out.println(new Tester(regExp, filepath).toString());
+  }
+
+  public static void _main(String[] args) throws Exception {
+    boolean displayAutomate = false;
+    boolean displayMatchingLinesNumber = false;
+    boolean displayMatchingIndex = false;
+    Automate result = null;
+    String regExp = null;
+    Scanner sc = null;
+    for (int i = 0; i < args.length; i++) {
+      String arg = args[i];
+      if (isFlag(arg)) {
+        switch (arg) {
+        case "-l":
+          displayMatchingLinesNumber = true;
+          break;
+        case "-dm":
+          displayMatchingIndex = true;
+        case "-d":
+          displayAutomate = true;
+          break;
+        default:
+          throw new IllegalArgumentException("Invalid Flag: n°" + arg);
+        }
       }
-      sc.close();
-      break;
-    default:
-      break;
+      if (isRegExp(arg))
+        regExp = arg.substring(1, arg.length() - 1);
+      else if (!isFlag(arg))
+        sc = new Scanner(new File(arg));
     }
+
+    if (regExp == null)
+      throw new Exception("No regex given");
+
+    if (displayAutomate)
+      result = Automate.buildFromRegexAndDisplayDot(regExp);
+    else
+      result = Automate.buildFromRegex(regExp);
+
+    if (sc == null) {
+      System.out.println("No file given");
+      return;
+    }
+
+    int matchingLinesNumber = 0;
+    while (sc.hasNextLine()) {
+      String line = sc.nextLine();
+      Pair<Integer, Integer> start_end = result.getFirstMatchWithIndex(line);
+      if (start_end != null) {
+        if (displayMatchingLinesNumber) {
+          System.out.print("Line " + matchingLinesNumber);
+          matchingLinesNumber++;
+        }
+        if (displayMatchingIndex)
+          System.out.print(start_end + " :");
+        System.out.println(line);
+      }
+    }
+    sc.close();
   }
 
   // FROM REGEX TO SYNTAX TREE
@@ -55,9 +102,12 @@ public class RegEx {
 
     regEx = input;
     ArrayList<RegExTree> result = new ArrayList<RegExTree>();
-    for (int i = 0; i < regEx.length(); i++)
-      result.add(new RegExTree(charToRoot(regEx.charAt(i)),
-                               new ArrayList<RegExTree>()));
+    for (int i = 0; i < regEx.length(); i++) {
+      if (regEx.charAt(i) != '\"')
+        result.add(new RegExTree(charToRoot(regEx.charAt(i)),
+                                 new ArrayList<RegExTree>()));
+    }
+
     return parse(result);
   }
 

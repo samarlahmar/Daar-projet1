@@ -12,23 +12,16 @@ public class NdfaToDfa {
 
   public static void convert(final Automate ndfa)
       throws IOException, InterruptedException {
-    final Set<Integer> starting_set = new HashSet<Integer>();
-    starting_set.add(ndfa.startingStateId);
-    processState(starting_set, ndfa, new HashMap<Set<Integer>, Integer>(),
-                 new HashMap<Integer, Set<Integer>>());
-    ndfa.states.keySet().removeIf(i -> i < ndfa.startingStateId);
+    DFA_To_NDFA(ndfa);
     minimize(ndfa);
   }
 
-  public static void convertAndDisplay(final Automate ndfa)
-      throws IOException, InterruptedException {
+  public static void DFA_To_NDFA(final Automate ndfa) {
     final Set<Integer> starting_set = new HashSet<Integer>();
     starting_set.add(ndfa.startingStateId);
     processState(starting_set, ndfa, new HashMap<Set<Integer>, Integer>(),
                  new HashMap<Integer, Set<Integer>>());
     ndfa.states.keySet().removeIf(i -> i < ndfa.startingStateId);
-    ndfa.writeToDotFile("dfa");
-    minimize(ndfa);
   }
 
   private static void
@@ -86,7 +79,7 @@ public class NdfaToDfa {
     });
   }
 
-  private static void minimize(final Automate dfa) {
+  public static void minimize(final Automate dfa) {
     final Map<Integer, Integer> minmized = new HashMap<Integer, Integer>();
     for (final Entry<Integer, State> toProcess : dfa.states.entrySet()) {
       Integer found = toProcess.getKey();

@@ -2,6 +2,8 @@ package regEx;
 
 import static org.junit.Assert.assertEquals;
 
+import regEx.Helpers.Pair;
+
 public class Tests {
 
   Automate auto;

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
+import regEx.Helpers.Pair;
 
 public class Automate {
   public Integer startingStateId, tmpNDFAFinalId;
@@ -22,11 +23,14 @@ public class Automate {
   public static Automate buildFromRegexAndDisplayDot(String regxp)
       throws Exception {
     RegExTree reg = RegEx.parse(regxp);
-    Automate ndfa = TreeToNdfa.makeNDFA(reg);
-    ndfa.writeToDotFile("ndfa");
-    NdfaToDfa.convertAndDisplay(ndfa);
-    ndfa.writeToDotFile("dfa-minimized");
-    return ndfa;
+    Automate automaton = TreeToNdfa.makeNDFA(reg);
+    System.out.println("Graphviz file generated in Visual/*.dot");
+    automaton.writeToDotFile("ndfa");
+    NdfaToDfa.DFA_To_NDFA(automaton);
+    automaton.writeToDotFile("dfa");
+    NdfaToDfa.minimize(automaton);
+    automaton.writeToDotFile("dfa-minimized");
+    return automaton;
   }
 
   private Pair<Integer, Integer> getFirstMatchWithIndex(final String toTest,
@@ -121,8 +125,6 @@ public class Automate {
     final String jpgExt = path + ".jpg";
 
     final String cmd = String.format("dot -Tjpeg %s > %s ", dotExt, jpgExt);
-    final boolean isWindows =
-        System.getProperty("os.name").toLowerCase().startsWith("windows");
 
     FileWriter fw = new FileWriter(dotExt, false);
     fw.write(toDotString());
@@ -130,10 +132,7 @@ public class Automate {
 
     ProcessBuilder builder = new ProcessBuilder();
     builder.inheritIO();
-    if (isWindows)
-      builder.command("cmd.exe", "/c", cmd);
-    else
-      builder.command("sh", "-c", cmd);
+    builder.command("sh", "-c", cmd);
 
     builder.start().waitFor();
   }
