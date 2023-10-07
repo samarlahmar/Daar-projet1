@@ -71,4 +71,15 @@ public class Tests {
   public void advencedOr() throws Exception {
     checkMatches(".a|bc", "abccccbcc", new Pair<Integer, Integer>(1, 3));
   }
+
+  @org.junit.Test
+  public void advencedOr2() throws Exception {
+    checkMatches(".a|bc", "bc", new Pair<Integer, Integer>(0, 2));
+  }
+
+  @org.junit.Test
+  public void stuff() throws Exception {
+    checkMatches("S(a|r|g)+on", "Saaaaaarrrrrrggon",
+                 new Pair<Integer, Integer>(0, 17));
+  }
 }
