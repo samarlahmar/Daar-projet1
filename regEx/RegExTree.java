@@ -1,6 +1,7 @@
 package regEx;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class RegExTree {
   protected int root;
@@ -46,4 +47,22 @@ public class RegExTree {
   }
 
   public int getRoot() { return root; }
+
+  public static String getConcatenation(RegExTree root) {
+    StringBuilder sb = new StringBuilder();
+    Stack<RegExTree> stack = new Stack<RegExTree>();
+    stack.push(root);
+    while (!stack.isEmpty()) {
+      RegExTree node = stack.pop();
+      if (node.isRootOperator()) {
+        if (node.root != RegEx.CONCAT)
+          return null;
+
+        stack.push(node.subTrees.get(1));
+        stack.push(node.subTrees.get(0));
+      } else
+        sb.append(node.rootToString());
+    }
+    return sb.toString();
+  }
 }

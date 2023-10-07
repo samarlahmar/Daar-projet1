@@ -4,3 +4,5 @@ S(.|.|.)+on
 0*1*
 .*ing
  *.* *
+Sargon
+abcd
