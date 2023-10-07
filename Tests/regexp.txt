@@ -7,3 +7,14 @@ S(.|.|.)+on
  *.* *
 Sargon
 abcd
+aaaaaaaaaaaab
+it
+the
+Unmatchable
+Happens
+(.|.|.|.)+b
+a|bc*
+a|bc+
+.a|bc+
+.a|bc*
+.|.+d+a
