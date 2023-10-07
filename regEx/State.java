@@ -91,7 +91,10 @@ public class State {
    * @param other The "other" parameter is an instance of the "State" class.
    */
   public void absorbeState(final State other) {
-    other._transitions.forEach((k, v) -> { this.addTransition(k, v); });
+    other._transitions.forEach((k, v) -> {
+      if (k != RegEx.EPSILON)
+        this.addTransition(k, v);
+    });
     this.isAccepting = this.isAccepting || other.isAccepting;
   }
 

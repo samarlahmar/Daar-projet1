@@ -80,7 +80,6 @@ public class NdfaToDfa {
       ndfa.startingStateId = ensemble_id;
 
     reachable.forEach(i -> { ensemble.absorbeState(ndfa.getState(i)); });
-    ensemble.deleteTransitionWithKey(RegEx.EPSILON);
 
     for (Entry<Integer, Collection<Integer>> newState :
          ensemble._transitions.entrySet()) {

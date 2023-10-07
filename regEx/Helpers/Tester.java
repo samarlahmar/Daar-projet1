@@ -26,6 +26,7 @@ public class Tester {
   int matchFileTime;
   int egrepTime;
   int kmpTime = -1;
+  long bookSize;
   String regExp;
   String book;
 
@@ -35,6 +36,8 @@ public class Tester {
     this.book = filepath.substring(filepath.lastIndexOf('/') + 1);
 
     Timer timer = new Timer();
+    File file = new File(filepath);
+    bookSize = file.length();
     RegExTree tree = RegEx.parse(regExp);
     parsing = timer.getElapsedTimeAndReset();
     Automate automaton = TreeToNdfa.makeNDFA(tree);
@@ -44,7 +47,7 @@ public class Tester {
     NdfaToDfa.minimize(automaton);
     minimization = timer.getElapsedTimeAndReset();
 
-    Scanner scanner = new Scanner(new File(filepath));
+    Scanner scanner = new Scanner(file);
     while (scanner.hasNextLine()) {
       String line = scanner.nextLine();
       if (automaton.match(line))
@@ -70,11 +73,13 @@ public class Tester {
     List<String> lines = Matching.matchingLines(clearRegExp, text);
     for (String line : lines)
       System.out.print(line);
+    System.out.println();
     kmpTime = timer.getElapsedTime();
   }
 
   public String toString() {
-    return regExp + ";" + book + ";" + parsing + ";" + ndfa + ";" + dfa + ";" +
-        minimization + ";" + matchFileTime + ";" + egrepTime + ";" + kmpTime;
+    return regExp + ";" + book + ";" + bookSize + ";" + parsing + ";" + ndfa +
+        ";" + dfa + ";" + minimization + ";" + matchFileTime + ";" + egrepTime +
+        ";" + kmpTime;
   }
 }
