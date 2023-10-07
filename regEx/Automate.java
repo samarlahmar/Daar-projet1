@@ -21,16 +21,15 @@ public class Automate {
     tmpNDFAFinalId = addState(ndfaEnd);
   }
 
-  public static Automate buildFromRegex(String regxp) throws Exception {
-    RegExTree reg = RegEx.parse(regxp);
+  public static Automate buildFromRegex(RegExTree reg) throws Exception {
     Automate ndfa = TreeToNdfa.makeNDFA(reg);
     NdfaToDfa.convert(ndfa);
     return ndfa;
   }
 
-  public static Automate buildFromRegexAndDisplayDot(String regxp)
+  public static Automate buildFromRegexAndDisplayDot(RegExTree reg)
       throws Exception {
-    RegExTree reg = RegEx.parse(regxp);
+
     Automate automaton = TreeToNdfa.makeNDFA(reg);
     System.out.println("Graphviz file generated in Visual/*.dot");
     automaton.writeToDotFile("ndfa");
@@ -77,8 +76,6 @@ public class Automate {
   }
 
   public boolean match(final String toTest) { return match(toTest, 0); }
-
-  
 
   public int addState(State newS) {
     final int id = stateIdGen.getAndIncrement();

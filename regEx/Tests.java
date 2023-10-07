@@ -11,7 +11,8 @@ public class Tests {
 
   private void checkMatches(String regEx, String toTest,
                             Pair<Integer, Integer> expected) throws Exception {
-    auto = Automate.buildFromRegex(regEx);
+    RegExTree tree = RegEx.parse(regEx);
+    auto = Automate.buildFromRegex(tree);
     assertEquals(auto.getFirstMatchWithIndex(toTest), expected);
   }
 

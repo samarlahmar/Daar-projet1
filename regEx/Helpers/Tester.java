@@ -24,22 +24,6 @@ public class Tester {
   String regExp;
   String book;
 
-  private class Timer {
-    int start = 0;
-
-    public Timer() { start = (int)System.currentTimeMillis(); }
-    public int getElapsedTime() {
-      return (int)System.currentTimeMillis() - start;
-    }
-
-    public int getElapsedTimeAndReset() {
-      int elapsed = getElapsedTime();
-      reset();
-      return elapsed;
-    }
-    public void reset() { start = (int)System.currentTimeMillis(); }
-  }
-
   public Tester(String regExp, String filepath) throws Exception {
 
     this.regExp = regExp;
@@ -78,24 +62,9 @@ public class Tester {
       return;
     String text = new String(Files.readAllBytes(Paths.get(filepath)),
                              StandardCharsets.UTF_8);
-    List<Integer> positions = Matching.matchingPattern(clearRegExp, text);
-    Integer last = Integer.MIN_VALUE;
-    String lastLine = "";
-    for (Integer integer : positions) {
-      if (integer >= last && integer < last + lastLine.length())
-        continue;
-
-      int start = integer;
-      while (start > 0 && text.charAt(start) != '\n')
-        start--;
-      int end = integer;
-      while (end < text.length() && text.charAt(end) != '\n')
-        end++;
-      lastLine = text.substring(start, end);
-      System.out.print(lastLine);
-    }
-    scanner.close();
-    System.out.println();
+    List<String> lines = Matching.matchingLines(clearRegExp, text);
+    for (String line : lines)
+      System.out.print(line);
     kmpTime = timer.getElapsedTime();
   }
 

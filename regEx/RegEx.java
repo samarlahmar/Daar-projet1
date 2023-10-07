@@ -2,10 +2,15 @@ package regEx;
 
 import java.io.File;
 import java.lang.Exception;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import regEx.Helpers.Pair;
 import regEx.Helpers.Tester;
+import regEx.Helpers.Timer;
 
 public class RegEx {
   // MACROS
@@ -26,73 +31,75 @@ public class RegEx {
   private static String regEx = null;
 
   private static boolean isFlag(String arg) { return arg.charAt(0) == '-'; }
-  private static boolean isRegExp(String arg) {
-    return !isFlag(arg) && arg.startsWith("\"") && arg.endsWith("\"");
-  }
 
-  public static void main(String[] args) throws Exception {
+  public static void _main(String[] args) throws Exception {
     final String regExp = args[0];
     final String filepath = args[1];
     System.out.println(new Tester(regExp, filepath).toString());
   }
 
-  public static void _main(String[] args) throws Exception {
+  public static void main(String[] args) throws Exception {
+    if (args.length < 1)
+      throw new Exception("Not enough arguments");
+
     boolean displayAutomate = false;
-    boolean displayMatchingLinesNumber = false;
-    boolean displayMatchingIndex = false;
+    boolean displayTime = false;
     Automate result = null;
-    String regExp = null;
-    Scanner sc = null;
-    for (int i = 0; i < args.length; i++) {
+    String regExp = args[0];
+    String filepath = null;
+    for (int i = 1; i < args.length; i++) {
       String arg = args[i];
+      System.out.println(arg);
       if (isFlag(arg)) {
         switch (arg) {
-        case "-l":
-          displayMatchingLinesNumber = true;
-          break;
-        case "-dm":
-          displayMatchingIndex = true;
         case "-d":
           displayAutomate = true;
+          break;
+        case "-t":
+          displayTime = true;
           break;
         default:
           throw new IllegalArgumentException("Invalid Flag: n°" + arg);
         }
       }
-      if (isRegExp(arg))
-        regExp = arg.substring(1, arg.length() - 1);
-      else if (!isFlag(arg))
-        sc = new Scanner(new File(arg));
+      if (!isFlag(arg))
+        filepath = arg;
     }
-
     if (regExp == null)
       throw new Exception("No regex given");
-
+    Timer timer = new Timer();
+    RegExTree tree = parse(regExp);
+    String pure = RegExTree.getConcatenation(tree);
     if (displayAutomate)
-      result = Automate.buildFromRegexAndDisplayDot(regExp);
-    else
-      result = Automate.buildFromRegex(regExp);
+      result = Automate.buildFromRegexAndDisplayDot(tree);
 
-    if (sc == null) {
-      System.out.println("No file given");
+    if (filepath == null) {
+      System.out.println("No file given to match");
       return;
     }
 
-    int matchingLinesNumber = 0;
-    while (sc.hasNextLine()) {
-      String line = sc.nextLine();
-      Pair<Integer, Integer> start_end = result.getFirstMatchWithIndex(line);
-      if (start_end != null) {
-        if (displayMatchingLinesNumber) {
-          System.out.print("Line " + matchingLinesNumber);
-          matchingLinesNumber++;
-        }
-        if (displayMatchingIndex)
-          System.out.print(start_end + " :");
-        System.out.println(line);
+    if (pure == null) {
+      if (result == null)
+        result = Automate.buildFromRegex(tree);
+      Scanner sc = new Scanner(new File(filepath));
+      while (sc.hasNextLine()) {
+        String line = sc.nextLine();
+        Pair<Integer, Integer> start_end = result.getFirstMatchWithIndex(line);
+        if (start_end != null)
+          System.out.println(line);
       }
+      sc.close();
+      System.out.println("Automate as been used");
+    } else {
+      String text = new String(Files.readAllBytes(Paths.get(filepath)),
+                               StandardCharsets.UTF_8);
+      List<String> lines = Matching.matchingLines(pure, text);
+      for (String line : lines)
+        System.out.print(line);
+      System.out.println("\nKMP as been used");
     }
-    sc.close();
+    if (displayTime)
+      System.out.println("Time Spent: " + timer.getElapsedTime() + "ms");
   }
 
   // FROM REGEX TO SYNTAX TREE

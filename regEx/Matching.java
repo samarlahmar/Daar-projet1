@@ -2,6 +2,7 @@ package regEx;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Matching {
@@ -92,5 +93,26 @@ public class Matching {
     }
 
     return positions;
+  }
+
+  public static List<String> matchingLines(String pattern, String text) {
+    List<String> lines = new LinkedList<>();
+    List<Integer> positions = Matching.matchingPattern(pattern, text);
+    Integer last = Integer.MIN_VALUE;
+    String lastLine = "";
+    for (Integer integer : positions) {
+      if (integer >= last && integer < last + lastLine.length())
+        continue;
+
+      int start = integer;
+      while (start > 0 && text.charAt(start) != '\n')
+        start--;
+      int end = integer;
+      while (end < text.length() && text.charAt(end) != '\n')
+        end++;
+      lastLine = text.substring(start, end);
+      lines.add(lastLine);
+    }
+    return lines;
   }
 }
