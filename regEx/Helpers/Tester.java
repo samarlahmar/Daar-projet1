@@ -13,6 +13,11 @@ import regEx.RegEx;
 import regEx.RegExTree;
 import regEx.TreeToNdfa;
 
+/**
+ * The Tester class is used to measure the performance of different regular
+ * expression matching algorithms on a given input file.
+ * Used to generate the data for the report.
+ */
 public class Tester {
   int parsing;
   int ndfa;
@@ -34,7 +39,7 @@ public class Tester {
     parsing = timer.getElapsedTimeAndReset();
     Automate automaton = TreeToNdfa.makeNDFA(tree);
     ndfa = timer.getElapsedTimeAndReset();
-    NdfaToDfa.DFA_To_NDFA(automaton);
+    NdfaToDfa.NDFA_To_DFA(automaton);
     dfa = timer.getElapsedTimeAndReset();
     NdfaToDfa.minimize(automaton);
     minimization = timer.getElapsedTimeAndReset();

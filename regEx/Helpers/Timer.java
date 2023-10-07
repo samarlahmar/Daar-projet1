@@ -1,5 +1,8 @@
 package regEx.Helpers;
 
+/**
+ * The Timer class provides methods to measure and reset elapsed time.
+ */
 public class Timer {
   int start = 0;
 

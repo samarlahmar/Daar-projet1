@@ -1,5 +1,8 @@
 package regEx.Helpers;
 
+/**
+ * The Pair class is a generic class that represents a pair of two values.
+ */
 public class Pair<T1, T2> {
   public T1 first;
   public T2 second;

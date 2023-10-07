@@ -4,6 +4,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class TreeToNdfa {
   private static AtomicInteger _stateCounter;
+  /**
+   * The function "makeNDFA" creates a non-deterministic finite automaton (NDFA)
+   * based on a given regular expression tree.
+   *
+   * @param tree The "tree" parameter is of type RegExTree, which represents a
+   *     regular expression
+   * parsed into a tree structure.
+   * @return The method is returning an object of type Automate.
+   */
   public static Automate makeNDFA(final RegExTree tree) {
     _stateCounter = new AtomicInteger(0);
     if (tree == null)
@@ -34,6 +43,12 @@ public class TreeToNdfa {
     }
   }
 
+  /**
+   * The function creates a deterministic finite automaton (DFA) that accepts
+   * any input character from a starting state to a final state.
+   *
+   * @return The method is returning an instance of the Automate class.
+   */
   public static Automate CreateDotAutomate() {
     final State s1 = new State();
     final State s2 = new State(true);
@@ -44,6 +59,15 @@ public class TreeToNdfa {
     return output;
   }
 
+  /**
+   * The function creates a basic case Automate object with two states and a
+   * transition between them.
+   *
+   * @param rootCode The parameter "rootCode" is an integer value that
+   *     represents the code for a
+   * transition in the automaton.
+   * @return The method is returning an instance of the Automate class.
+   */
   public static Automate CreateBasisCaseAutomate(final int rootCode) {
     final State s1 = new State();
     final State s2 = new State(true);
@@ -52,6 +76,14 @@ public class TreeToNdfa {
     return output;
   }
 
+  /**
+   * The function creates a new automaton by concatenating two existing
+   * automata.
+   *
+   * @param a The parameter "a" is an instance of the Automate class
+   * @param b The parameter "b" is an instance of the Automate class.
+   * @return The method is returning an Automate object.
+   */
   public static Automate CreateConcatAutomate(final Automate a,
                                               final Automate b) {
     final State aFinalState = a.getTmpNDFAFinalState();
@@ -62,6 +94,14 @@ public class TreeToNdfa {
     return a;
   }
 
+  /**
+   * The function "CreateStarAutomate" takes an Automate object as input and
+   * modifies it to create a new Automate object that represents the Kleene star
+   * operation on the original Automate.
+   *
+   * @param a The parameter "a" is an object of type Automate.
+   * @return The method is returning an Automate object.
+   */
   public static Automate CreateStarAutomate(final Automate a) {
     final State s1 = new State();
     final State s2 = new State(true);
@@ -96,7 +136,6 @@ public class TreeToNdfa {
     a.tmpNDFAFinalId = s2Id;
     return a;
   }
-
   public static Automate CreateOrAutomate(Automate a, Automate b) {
     final State s2 = new State(true);
     final int s2Id = a.addState(s2);

@@ -13,13 +13,11 @@ public class State {
   protected Map<Integer, State> dfaTransition;
   protected boolean isAccepting = false;
 
+  // Declaring a string format that will be used to generate a DOT
+  // representation of a state in a finite automaton.
   private static final String stateFormat =
       "%d [label=\"%s\" color=\"%s\" shape=\"%s\"]\n";
   private static final String transitionFormat = "%d -> %d [label=\"%c\"]\n";
-
-  public Integer getDFATransitionWithKey(final Integer symbol) {
-    return _transitions.get(symbol).iterator().next();
-  }
 
   public State() {
     this._transitions = new HashMap<Integer, Collection<Integer>>();
@@ -30,6 +28,14 @@ public class State {
     this.isAccepting = isAccepting;
   }
 
+  /**
+   * The function returns the destination state for a given symbol in a
+   * collection of transitions.
+   *
+   * @param symbol The symbol parameter is an Integer that represents a symbol
+   *     used in the transitions.
+   * @return The method is returning an Integer value.
+   */
   public Integer getDestinationState(final Integer symbol) {
     final Collection<Integer> destinations = _transitions.get(symbol);
     if (destinations == null)
@@ -37,10 +43,25 @@ public class State {
     return destinations.iterator().next();
   }
 
+  /**
+   * The function returns the destination state in a DFA given a symbol.
+   *
+   * @param symbol The symbol parameter is an Integer representing the input
+   *     symbol for the DFA transition.
+   * @return The method is returning a State object.
+   */
   public State getDFADestinationState(final Integer symbol) {
     return dfaTransition.get(symbol);
   }
 
+  /**
+   * The function "isEquiv" checks if two State objects are equivalent based on
+   * their accepting status and transitions.
+   *
+   * @param a The parameter "a" is an object of type "State".
+   * @param b The parameter "b" is an object of type "State".
+   * @return The method is returning a boolean value.
+   */
   public static boolean isEquiv(State a, State b) {
 
     return a.isAccepting == b.isAccepting &&
@@ -63,6 +84,12 @@ public class State {
     this._transitions.put(symbol, newDestinations);
   }
 
+  /**
+   * The function "absorbeState" merges the transitions and updates the
+   * accepting state  boolean value.
+   *
+   * @param other The "other" parameter is an instance of the "State" class.
+   */
   public void absorbeState(final State other) {
     other._transitions.forEach((k, v) -> { this.addTransition(k, v); });
     this.isAccepting = this.isAccepting || other.isAccepting;
@@ -72,6 +99,14 @@ public class State {
     this._transitions.remove(symbol);
   }
 
+  /**
+   * The function takes an integer symbol as input and returns the corresponding
+   * character representation, with special cases for epsilon, dot
+   *
+   * @param symbol The symbol parameter is an Integer representing a symbol in a
+   *     regular expression.
+   * @return The method is returning a Character.
+   */
   private Character getChar(final Integer symbol) {
     if (symbol == RegEx.EPSILON)
       return 'ε';
@@ -83,6 +118,16 @@ public class State {
     return '?';
   }
 
+  /**
+   * The function generates a DOT string representation of a state in a finite
+   * automaton.
+   *
+   * @param outBuffer The `outBuffer` parameter is a `StringBuilder` object that
+   *     is used to build the
+   * dot string representation of the state.
+   * @param stateID The stateID parameter represents the ID of a state in a
+   *     finite state machine.
+   */
   public void toDotString(final StringBuilder outBuffer, final int stateID) {
     String color = "black";
     String shape = "circle";

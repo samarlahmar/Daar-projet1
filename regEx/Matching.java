@@ -7,6 +7,9 @@ import java.util.List;
 
 public class Matching {
 
+  // The `makeLps` method is used to create the Longest Proper Prefix which is
+  // also a Suffix (LPS) array for a given pattern. The LPS array is used in the
+  // Knuth-Morris-Pratt (KMP) algorithm for pattern matching.
   private static int[] makeLps(String pattern) {
     int n = pattern.length();
     int[] lps = new int[n + 1];
@@ -51,6 +54,20 @@ public class Matching {
     return optimise(lps, pattern);
   }
 
+  /**
+   * The function optimizes the Longest Proper Prefix and Suffix (LPS) array for
+   * a given pattern.
+   *
+   * @param lps The "lps" parameter is an array of integers representing the
+   *     Longest Proper Prefix
+   * which is also a Suffix (LPS) for each index in the pattern string.
+   * @param pattern The "pattern" parameter is a String representing the pattern
+   * for which we want to calculate the Longest Proper Prefix which is also a
+   * Suffix (LPS) array. The LPS array is used in string matching algorithms
+   * like the Knuth-Morris-Pratt (KMP) algorithm to optimize
+   * @return The method is returning an array of integers, specifically the
+   *     modified lps array.
+   */
   private static int[] optimise(int[] lps, String pattern) {
     for (int i = 0; i < lps.length; i++) {
       try {
@@ -70,6 +87,20 @@ public class Matching {
     return lps;
   }
 
+  /**
+   * The function `matchingPattern` takes a pattern and a text as input and
+   * returns a list of starting positions in the text where the pattern is
+   * found.
+   *
+   * @param pattern The pattern parameter is a string that represents the
+   *     pattern we are searching for
+   * in the text.
+   * @param text The "text" parameter is the string in which we want to search
+   *     for the pattern.
+   * @return The method is returning a List of integers, which represents the
+   *     positions in the text
+   * where the pattern is found.
+   */
   public static List<Integer> matchingPattern(String pattern, String text) {
     List<Integer> positions = new ArrayList<>();
     int[] carryOver = makeLps(pattern);
@@ -95,6 +126,18 @@ public class Matching {
     return positions;
   }
 
+  /**
+   * The function `matchingLines` takes a pattern and a text as input, and
+   * returns a list of lines from the text that match the pattern.
+   *
+   * @param pattern The "pattern" parameter is a string that represents the
+   *     pattern you want to match
+   * in the "text" parameter.
+   * @param text The "text" parameter is a string that represents the text in
+   *     which we want to search
+   * for lines that match a given pattern.
+   * @return The method is returning a List of Strings.
+   */
   public static List<String> matchingLines(String pattern, String text) {
     List<String> lines = new LinkedList<>();
     List<Integer> positions = Matching.matchingPattern(pattern, text);

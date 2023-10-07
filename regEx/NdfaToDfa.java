@@ -10,13 +10,27 @@ import java.util.Set;
 
 public class NdfaToDfa {
 
+  /**
+   * The function converts a non-deterministic finite automaton (NDFA) to a
+   * deterministic finite automaton (DFA) and then minimizes the DFA.
+   *
+   * @param ndfa The parameter "ndfa" is an object of type "Automate" which
+   *     represents a
+   * non-deterministic finite automaton (NDFA).
+   */
   public static void convert(final Automate ndfa)
       throws IOException, InterruptedException {
-    DFA_To_NDFA(ndfa);
+    NDFA_To_DFA(ndfa);
     minimize(ndfa);
   }
 
-  public static void DFA_To_NDFA(final Automate ndfa) {
+  /**
+   * The function converts a non-deterministic finite automaton (NDFA) to a
+   * deterministic finite automaton (DFA).
+   *
+   * @param ndfa The parameter "ndfa" is an object of type "Automate".
+   */
+  public static void NDFA_To_DFA(final Automate ndfa) {
     final Set<Integer> starting_set = new HashSet<Integer>();
     starting_set.add(ndfa.startingStateId);
     processState(starting_set, ndfa, new HashMap<Set<Integer>, Integer>(),
@@ -24,11 +38,31 @@ public class NdfaToDfa {
     ndfa.states.keySet().removeIf(i -> i < ndfa.startingStateId);
   }
 
+  /**
+   * The function processes a state in an automaton by merging states, finding
+   * reachable states, creating a new ensemble state, and updating transitions.
+   *
+   * @param merged The parameter "merged" is a set of integers that represents a
+   *     merged state in an
+   * automaton.
+   * @param ndfa The `ndfa` parameter is an instance of the `Automate` class,
+   *     which represents a
+   * non-deterministic finite automaton. It is used to store the states and
+   * transitions of the automaton.
+   * @param set_to_state The parameter "set_to_state" is a map that maps a set
+   *     of integers to an integer. It is used to keep track of the mapping
+   * between a set of states in the NFA and the corresponding state in the DFA.
+   * @param epsilonReachable The epsilonReachable parameter is a map that stores
+   *     the epsilon reachable  states for each state in the Automate ndfa. It
+   * is of type Map<Integer, Set<Integer>> where the key is the state id and the
+   * value is a set of state ids that can be reached from the key state using
+   * epsilon
+   */
   private static void
   processState(final Set<Integer> merged, final Automate ndfa,
-               final Map<Set<Integer>, Integer> old_to_new,
+               final Map<Set<Integer>, Integer> set_to_state,
                final Map<Integer, Set<Integer>> epsilonReachable) {
-    if (old_to_new.containsKey(merged))
+    if (set_to_state.containsKey(merged))
       return;
 
     final Set<Integer> reachable = new HashSet<Integer>();
@@ -41,8 +75,8 @@ public class NdfaToDfa {
 
     final State ensemble = new State();
     final Integer ensemble_id = ndfa.addState(ensemble);
-    old_to_new.put(merged, ensemble_id);
-    if (old_to_new.size() == 1)
+    set_to_state.put(merged, ensemble_id);
+    if (set_to_state.size() == 1)
       ndfa.startingStateId = ensemble_id;
 
     reachable.forEach(i -> { ensemble.absorbeState(ndfa.getState(i)); });
@@ -53,11 +87,21 @@ public class NdfaToDfa {
       final Set<Integer> new_ensemble =
           new HashSet<Integer>(newState.getValue());
 
-      processState(new_ensemble, ndfa, old_to_new, epsilonReachable);
-      ensemble.setTransition(newState.getKey(), old_to_new.get(new_ensemble));
+      processState(new_ensemble, ndfa, set_to_state, epsilonReachable);
+      ensemble.setTransition(newState.getKey(), set_to_state.get(new_ensemble));
     }
   }
 
+  /**
+   * The function recursively finds all states that can be reached from a given
+   * state through epsilon transitions in an NFA.
+   *
+   * @param id The parameter "id" represents the ID of a state in an automaton.
+   * @param ndfa The parameter "ndfa" is an instance of the "Automate" class,
+   *     which represents a non-deterministic finite automaton (NFA).
+   * @param epsilonReachable A map that stores the epsilon reachable states for
+   *     each state in the Automate (NDFA).
+   */
   private static void
   allEpsilonReachable(final int id, final Automate ndfa,
                       Map<Integer, Set<Integer>> epsilonReachable) {
@@ -79,6 +123,12 @@ public class NdfaToDfa {
     });
   }
 
+  /**
+   * The function "minimize" takes a DFA (Deterministic Finite Automaton) as
+   * input and minimizes it by merging equivalent states.
+   *
+   * @param dfa The parameter `dfa` is an object of type `Automate`.
+   */
   public static void minimize(final Automate dfa) {
     final Map<Integer, Integer> minmized = new HashMap<Integer, Integer>();
     for (final Entry<Integer, State> toProcess : dfa.states.entrySet()) {
