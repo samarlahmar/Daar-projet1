@@ -1,7 +1,6 @@
 # Daar-projet1
 
 - [ ] Ploting Stuff
-- [ ] Commentaires
 
 ## Comment lancer le projet
 1. Ce placer a la racine du projet
