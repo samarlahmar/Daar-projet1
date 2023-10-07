@@ -35,9 +35,6 @@ def runTests():
             cmd = "java regEx/RegEx \"{0}\" {1}".format(reg, book)
             output += os.popen(cmd).readlines()[-1].replace('\n', '') + '\n'
 
-    return output
-
-
-with open(currentDir + '/data.csv', 'w') as f:
-    f.write(runTests())
-    f.close()
+    with open(currentDir + '/data.csv', 'w') as f:
+        f.write(output)
+        f.close()
