@@ -32,13 +32,13 @@ public class RegEx {
 
   private static boolean isFlag(String arg) { return arg.charAt(0) == '-'; }
 
-  public static void main(String[] args) throws Exception {
+  public static void _main(String[] args) throws Exception {
     final String regExp = args[0];
     final String filepath = args[1];
     System.out.println(new Tester(regExp, filepath).toString());
   }
 
-  public static void _main(String[] args) throws Exception {
+  public static void main(String[] args) throws Exception {
     if (args.length < 1)
       throw new Exception("Not enough arguments");
 
